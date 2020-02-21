@@ -8,11 +8,8 @@ using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Commands;
 using TwitchLeecher.Shared.Helpers;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class SearchViewVM : ViewModelBase
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.ViewModels {
+    public class SearchViewVM : ViewModelBase {
 
         private SearchParameters _searchParams;
 
@@ -29,216 +26,160 @@ namespace TwitchLeecher.Gui.ViewModels
 
         private readonly object _commandLockObject;
 
-        #endregion Fields
-
-        #region Constructors
-
         public SearchViewVM(
             ITwitchService twitchService,
             ISearchService searchService,
             IDialogService dialogService,
             INavigationService navigationService,
-            IPreferencesService preferencesService)
-        {
-            _twitchService = twitchService;
-            _searchService = searchService;
-            _dialogService = dialogService;
-            _navigationService = navigationService;
-            _preferencesService = preferencesService;
+            IPreferencesService preferencesService ) {
+            this._twitchService = twitchService;
+            this._searchService = searchService;
+            this._dialogService = dialogService;
+            this._navigationService = navigationService;
+            this._preferencesService = preferencesService;
 
-            _commandLockObject = new object();
+            this._commandLockObject = new object();
         }
 
-        #endregion Constructors
-
-        #region Properties
-
-        public SearchParameters SearchParams
-        {
-            get
-            {
-                if (_searchParams == null)
-                {
-                    _searchParams = _searchService.LastSearchParams.Clone();
+        public SearchParameters SearchParams {
+            get {
+                if ( this._searchParams == null ) {
+                    this._searchParams = this._searchService.LastSearchParams.Clone();
                 }
 
-                return _searchParams;
+                return this._searchParams;
             }
-            set
-            {
-                SetProperty(ref _searchParams, value, nameof(SearchParams));
-            }
-        }
-
-        public RangeObservableCollection<string> FavChannels
-        {
-            get
-            {
-                return _preferencesService.CurrentPreferences.SearchFavouriteChannels;
+            set {
+                this.SetProperty( ref this._searchParams, value, nameof( this.SearchParams ) );
             }
         }
 
-        public ICommand ClearUrlsCommand
-        {
-            get
-            {
-                if (_clearUrlsCommand == null)
-                {
-                    _clearUrlsCommand = new DelegateCommand(ClearUrls);
+        public RangeObservableCollection<string> FavChannels {
+            get {
+                return this._preferencesService.CurrentPreferences.SearchFavouriteChannels;
+            }
+        }
+
+        public ICommand ClearUrlsCommand {
+            get {
+                if ( this._clearUrlsCommand == null ) {
+                    this._clearUrlsCommand = new DelegateCommand( this.ClearUrls );
                 }
 
-                return _clearUrlsCommand;
+                return this._clearUrlsCommand;
             }
         }
 
-        public ICommand ClearIdsCommand
-        {
-            get
-            {
-                if (_clearIdsCommand == null)
-                {
-                    _clearIdsCommand = new DelegateCommand(ClearIds);
+        public ICommand ClearIdsCommand {
+            get {
+                if ( this._clearIdsCommand == null ) {
+                    this._clearIdsCommand = new DelegateCommand( this.ClearIds );
                 }
 
-                return _clearIdsCommand;
+                return this._clearIdsCommand;
             }
         }
 
-        public ICommand SearchCommand
-        {
-            get
-            {
-                if (_searchCommand == null)
-                {
-                    _searchCommand = new DelegateCommand(Search);
+        public ICommand SearchCommand {
+            get {
+                if ( this._searchCommand == null ) {
+                    this._searchCommand = new DelegateCommand( this.Search );
                 }
 
-                return _searchCommand;
+                return this._searchCommand;
             }
         }
 
-        public ICommand CancelCommand
-        {
-            get
-            {
-                if (_cancelCommand == null)
-                {
-                    _cancelCommand = new DelegateCommand(Cancel);
+        public ICommand CancelCommand {
+            get {
+                if ( this._cancelCommand == null ) {
+                    this._cancelCommand = new DelegateCommand( this.Cancel );
                 }
 
-                return _cancelCommand;
+                return this._cancelCommand;
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        private void ClearUrls()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    SearchParams.Urls = null;
+        private void ClearUrls() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this.SearchParams.Urls = null;
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ClearIds()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    SearchParams.Ids = null;
+        private void ClearIds() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this.SearchParams.Ids = null;
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void Search()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _dialogService.SetBusy();
-                    Validate();
+        private void Search() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._dialogService.SetBusy();
+                    this.Validate();
 
-                    if (!HasErrors)
-                    {
-                        _searchService.PerformSearch(SearchParams);
+                    if ( !this.HasErrors ) {
+                        this._searchService.PerformSearch( this.SearchParams );
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void Cancel()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _navigationService.NavigateBack();
+        private void Cancel() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._navigationService.NavigateBack();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        public override void Validate(string propertyName = null)
-        {
-            base.Validate(propertyName);
+        public override void Validate( string propertyName = null ) {
+            base.Validate( propertyName );
 
-            string currentProperty = nameof(SearchParams);
+            string currentProperty = nameof( this.SearchParams );
 
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                SearchParams.Validate();
+            if ( string.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                this.SearchParams.Validate();
 
-                if (SearchParams.SearchType == SearchType.Channel &&
-                    !string.IsNullOrWhiteSpace(SearchParams.Channel) &&
-                    !_twitchService.ChannelExists(SearchParams.Channel))
-                {
-                    SearchParams.AddError(nameof(SearchParams.Channel), "The specified channel does not exist on Twitch!");
+                if ( this.SearchParams.SearchType == SearchType.Channel &&
+                     !string.IsNullOrWhiteSpace( this.SearchParams.Channel ) &&
+                     !this._twitchService.ChannelExists( this.SearchParams.Channel ) ) {
+                    this.SearchParams.AddError( nameof( this.SearchParams.Channel ), "The specified channel does not exist on Twitch!" );
                 }
 
-                if (SearchParams.HasErrors)
-                {
-                    AddError(currentProperty, "Invalid Search Parameters!");
+                if ( this.SearchParams.HasErrors ) {
+                    this.AddError( currentProperty, "Invalid Search Parameters!" );
                 }
             }
         }
 
-        protected override List<MenuCommand> BuildMenu()
-        {
+        protected override List<MenuCommand> BuildMenu() {
             List<MenuCommand> menuCommands = base.BuildMenu();
 
-            if (menuCommands == null)
-            {
+            if ( menuCommands == null ) {
                 menuCommands = new List<MenuCommand>();
             }
 
-            menuCommands.Add(new MenuCommand(SearchCommand, "Search", "Search"));
-            menuCommands.Add(new MenuCommand(CancelCommand, "Cancel", "Times"));
+            menuCommands.Add( new MenuCommand( this.SearchCommand, "Search", "Search" ) );
+            menuCommands.Add( new MenuCommand( this.CancelCommand, "Cancel", "Times" ) );
 
             return menuCommands;
         }
-
-        #endregion Methods
     }
 }

@@ -1,41 +1,30 @@
-﻿using System;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class UpdateInfo
-    {
-        #region Constructors
+    using System;
 
-        public UpdateInfo(Version newVersion, DateTime releaseDate, string downloadUrl, string releaseNotes)
-        {
-            if (string.IsNullOrWhiteSpace(downloadUrl))
-            {
-                throw new ArgumentNullException(nameof(downloadUrl));
-            }
+    public class UpdateInfo {
 
-            if (string.IsNullOrWhiteSpace(releaseNotes))
-            {
-                throw new ArgumentNullException(nameof(releaseNotes));
-            }
-
-            NewVersion = newVersion ?? throw new ArgumentNullException(nameof(newVersion));
-            ReleaseDate = releaseDate;
-            DownloadUrl = downloadUrl;
-            ReleaseNotes = releaseNotes;
-        }
-
-        #endregion Constructors
-
-        #region Properties
+        public String DownloadUrl { get; }
 
         public Version NewVersion { get; }
 
         public DateTime ReleaseDate { get; }
 
-        public string DownloadUrl { get; }
+        public String ReleaseNotes { get; }
 
-        public string ReleaseNotes { get; }
+        public UpdateInfo( Version newVersion, DateTime releaseDate, String downloadUrl, String releaseNotes ) {
+            if ( String.IsNullOrWhiteSpace( downloadUrl ) ) {
+                throw new ArgumentNullException( nameof( downloadUrl ) );
+            }
 
-        #endregion Properties
+            if ( String.IsNullOrWhiteSpace( releaseNotes ) ) {
+                throw new ArgumentNullException( nameof( releaseNotes ) );
+            }
+
+            this.NewVersion = newVersion ?? throw new ArgumentNullException( nameof( newVersion ) );
+            this.ReleaseDate = releaseDate;
+            this.DownloadUrl = downloadUrl;
+            this.ReleaseNotes = releaseNotes;
+        }
     }
 }

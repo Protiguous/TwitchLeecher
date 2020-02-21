@@ -1,13 +1,9 @@
-using System;
+namespace TwitchLeecher.Shared.Events {
 
-namespace TwitchLeecher.Shared.Events
-{
-    public interface IDelegateReference
-    {
-        #region Properties
+    using System;
+
+    public interface IDelegateReference {
 
         Delegate Target { get; }
-
-        #endregion Properties
     }
 }

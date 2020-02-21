@@ -1,49 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
+namespace TwitchLeecher.Shared.Events {
 
-namespace TwitchLeecher.Shared.Events
-{
-    public class EventAggregator : IEventAggregator
-    {
-        #region Fields
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+
+    public class EventAggregator : IEventAggregator {
 
         private readonly Dictionary<Type, EventBase> _events;
         private readonly SynchronizationContext _syncContext;
 
-        #endregion Fields
-
-        #region Constructors
-
-        public EventAggregator()
-        {
-            _events = new Dictionary<Type, EventBase>();
-            _syncContext = SynchronizationContext.Current;
+        public EventAggregator() {
+            this._events = new Dictionary<Type, EventBase>();
+            this._syncContext = SynchronizationContext.Current;
         }
 
-        #endregion Constructors
-
-        #region Methods
-
-        public TEventType GetEvent<TEventType>() where TEventType : EventBase, new()
-        {
-            lock (_events)
-            {
-                if (!_events.TryGetValue(typeof(TEventType), out EventBase existingEvent))
-                {
+        public TEventType GetEvent<TEventType>() where TEventType : EventBase, new() {
+            lock ( this._events ) {
+                if ( !this._events.TryGetValue( typeof( TEventType ), out EventBase existingEvent ) ) {
                     TEventType newEvent = new TEventType();
-                    newEvent.SynchronizationContext = _syncContext;
-                    _events[typeof(TEventType)] = newEvent;
+                    newEvent.SynchronizationContext = this._syncContext;
+                    this._events[ typeof( TEventType ) ] = newEvent;
 
                     return newEvent;
                 }
-                else
-                {
-                    return (TEventType)existingEvent;
+                else {
+                    return ( TEventType )existingEvent;
                 }
             }
         }
-
-        #endregion Methods
     }
 }

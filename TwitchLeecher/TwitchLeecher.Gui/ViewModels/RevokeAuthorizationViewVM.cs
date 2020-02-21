@@ -6,11 +6,8 @@ using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Commands;
 using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class RevokeAuthorizationViewVM : ViewModelBase
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.ViewModels {
+    public class RevokeAuthorizationViewVM : ViewModelBase {
 
         private readonly IDialogService _dialogService;
         private readonly ITwitchService _twitchService;
@@ -22,74 +19,50 @@ namespace TwitchLeecher.Gui.ViewModels
 
         private readonly object _commandLockObject;
 
-        #endregion Fields
-
-        #region Constructor
-
         public RevokeAuthorizationViewVM(
             IDialogService dialogService,
             ITwitchService twitchService,
             INavigationService navigationService,
             INotificationService notificationService,
-            IEventAggregator eventAggregator)
-        {
-            _dialogService = dialogService;
-            _twitchService = twitchService;
-            _navigationService = navigationService;
-            _notificationService = notificationService;
-            _eventAggregator = eventAggregator;
+            IEventAggregator eventAggregator ) {
+            this._dialogService = dialogService;
+            this._twitchService = twitchService;
+            this._navigationService = navigationService;
+            this._notificationService = notificationService;
+            this._eventAggregator = eventAggregator;
 
-            _commandLockObject = new object();
+            this._commandLockObject = new object();
 
-            _eventAggregator.GetEvent<IsAuthorizedChangedEvent>().Subscribe(IsAuthorizedChanged);
+            this._eventAggregator.GetEvent<IsAuthorizedChangedEvent>().Subscribe( this.IsAuthorizedChanged );
         }
 
-        #endregion Constructor
-
-        #region Properties
-
-        public ICommand RevokeCommand
-        {
-            get
-            {
-                if (_revokeCommand == null)
-                {
-                    _revokeCommand = new DelegateCommand(Revoke);
+        public ICommand RevokeCommand {
+            get {
+                if ( this._revokeCommand == null ) {
+                    this._revokeCommand = new DelegateCommand( this.Revoke );
                 }
 
-                return _revokeCommand;
+                return this._revokeCommand;
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        private void Revoke()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _twitchService.RevokeAuthorization();
-                    _navigationService.ShowAuthorize();
-                    _notificationService.ShowNotification("Twitch authorization has been revoked!");
+        private void Revoke() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._twitchService.RevokeAuthorization();
+                    this._navigationService.ShowAuthorize();
+                    this._notificationService.ShowNotification( "Twitch authorization has been revoked!" );
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void IsAuthorizedChanged(bool isAuthorized)
-        {
-            if (!isAuthorized)
-            {
-                _navigationService.ShowAuthorize();
+        private void IsAuthorizedChanged( bool isAuthorized ) {
+            if ( !isAuthorized ) {
+                this._navigationService.ShowAuthorize();
             }
         }
-
-        #endregion Methods
     }
 }

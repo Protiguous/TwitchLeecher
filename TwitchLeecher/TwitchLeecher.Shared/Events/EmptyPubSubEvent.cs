@@ -1,72 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace TwitchLeecher.Shared.Events {
 
-namespace TwitchLeecher.Shared.Events
-{
-    public class EmptyPresentationEvent : EventBase
-    {
-        #region Fields
+    using System;
+    using System.Collections.Generic;
 
-        private readonly PubSubEvent<object> _innerEvent;
-        private readonly Dictionary<Action, Action<object>> _subscriberActions;
+    public class EmptyPresentationEvent : EventBase {
 
-        #endregion Fields
+        private readonly PubSubEvent<Object> _innerEvent;
+        private readonly Dictionary<Action, Action<Object>> _subscriberActions;
 
-        #region Constructors
-
-        public EmptyPresentationEvent()
-        {
-            _innerEvent = new PubSubEvent<object>();
-            _subscriberActions = new Dictionary<Action, Action<object>>();
+        public EmptyPresentationEvent() {
+            this._innerEvent = new PubSubEvent<Object>();
+            this._subscriberActions = new Dictionary<Action, Action<Object>>();
         }
 
-        #endregion Constructors
-
-        #region Methods
-
-        public void Publish()
-        {
-            _innerEvent.Publish(null);
+        public void Publish() {
+            this._innerEvent.Publish( null );
         }
 
-        public void Subscribe(Action action)
-        {
-            Subscribe(action, false);
+        public void Subscribe( Action action ) {
+            this.Subscribe( action, false );
         }
 
-        public void Subscribe(Action action, bool keepSubscriberReferenceAlive)
-        {
-            Subscribe(action, ThreadOption.PublisherThread, keepSubscriberReferenceAlive);
+        public void Subscribe( Action action, Boolean keepSubscriberReferenceAlive ) {
+            this.Subscribe( action, ThreadOption.PublisherThread, keepSubscriberReferenceAlive );
         }
 
-        public void Subscribe(Action action, ThreadOption threadOption)
-        {
-            Subscribe(action, threadOption, false);
+        public void Subscribe( Action action, ThreadOption threadOption ) {
+            this.Subscribe( action, threadOption, false );
         }
 
-        public void Subscribe(Action action, ThreadOption threadOption, bool keepSubscriberReferenceAlive)
-        {
-            void wrappedAction(object o)
-            {
+        public void Subscribe( Action action, ThreadOption threadOption, Boolean keepSubscriberReferenceAlive ) {
+            void wrappedAction( Object o ) {
                 action();
             }
 
-            _subscriberActions.Add(action, wrappedAction);
-            _innerEvent.Subscribe(wrappedAction, threadOption, keepSubscriberReferenceAlive);
+            this._subscriberActions.Add( action, wrappedAction );
+            this._innerEvent.Subscribe( wrappedAction, threadOption, keepSubscriberReferenceAlive );
         }
 
-        public void Unsubscribe(Action action)
-        {
-            if (!_subscriberActions.ContainsKey(action))
-            {
+        public void Unsubscribe( Action action ) {
+            if ( !this._subscriberActions.ContainsKey( action ) ) {
                 return;
             }
 
-            Action<object> wrappedActionToUnsubscribe = _subscriberActions[action];
-            _innerEvent.Unsubscribe(wrappedActionToUnsubscribe);
-            _subscriberActions.Remove(action);
+            Action<Object> wrappedActionToUnsubscribe = this._subscriberActions[ action ];
+            this._innerEvent.Unsubscribe( wrappedActionToUnsubscribe );
+            this._subscriberActions.Remove( action );
         }
-
-        #endregion Methods
     }
 }

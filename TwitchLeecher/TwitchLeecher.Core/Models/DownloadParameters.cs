@@ -1,311 +1,229 @@
-﻿using System;
-using System.IO;
-using TwitchLeecher.Shared.Extensions;
-using TwitchLeecher.Shared.IO;
-using TwitchLeecher.Shared.Notification;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class DownloadParameters : BindableBase
-    {
-        #region Fields
+    using System;
+    using System.IO;
+    using TwitchLeecher.Shared.Extensions;
+    using TwitchLeecher.Shared.IO;
+    using TwitchLeecher.Shared.Notification;
 
-        private readonly TwitchVideo _video;
-        private readonly VodAuthInfo _vodAuthInfo;
+    public class DownloadParameters : BindableBase {
 
+        private Boolean _cropEnd;
+        private TimeSpan _cropEndTime;
+        private Boolean _cropStart;
+        private TimeSpan _cropStartTime;
+        private Boolean _disableConversion;
+        private String _filename;
+        private String _folder;
         private TwitchVideoQuality _quality;
 
-        private string _folder;
-        private string _filename;
-
-        private bool _cropStart;
-        private bool _cropEnd;
-        private bool _disableConversion;
-
-        private TimeSpan _cropStartTime;
-        private TimeSpan _cropEndTime;
-
-        #endregion Fields
-
-        #region Constructors
-
-        public DownloadParameters(TwitchVideo video, VodAuthInfo vodAuthInfo, TwitchVideoQuality quality, string folder, string filename, bool disableConversion)
-        {
-            if (string.IsNullOrWhiteSpace(folder))
-            {
-                throw new ArgumentNullException(nameof(folder));
+        public Boolean CropEnd {
+            get {
+                return this._cropEnd;
             }
 
-            if (string.IsNullOrWhiteSpace(filename))
-            {
-                throw new ArgumentNullException(nameof(filename));
-            }
-
-            _video = video ?? throw new ArgumentNullException(nameof(video));
-            _quality = quality ?? throw new ArgumentNullException(nameof(quality));
-            _vodAuthInfo = vodAuthInfo ?? throw new ArgumentNullException(nameof(vodAuthInfo));
-
-            _folder = folder;
-            _filename = filename;
-            _disableConversion = disableConversion;
-
-            _cropEndTime = video.Length;
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public TwitchVideo Video
-        {
-            get
-            {
-                return _video;
+            set {
+                this.SetProperty( ref this._cropEnd, value, nameof( this.CropEnd ) );
+                this.FirePropertyChanged( nameof( this.CroppedLength ) );
             }
         }
 
-        public TwitchVideoQuality Quality
-        {
-            get
-            {
-                return _quality;
+        public TimeSpan CropEndTime {
+            get {
+                return this._cropEndTime;
             }
-            set
-            {
-                SetProperty(ref _quality, value, nameof(Quality));
+
+            set {
+                this.SetProperty( ref this._cropEndTime, value, nameof( this.CropEndTime ) );
+                this.FirePropertyChanged( nameof( this.CroppedLength ) );
             }
         }
 
-        public VodAuthInfo VodAuthInfo
-        {
-            get
-            {
-                return _vodAuthInfo;
-            }
-        }
-
-        public string Folder
-        {
-            get
-            {
-                return _folder;
-            }
-            set
-            {
-                SetProperty(ref _folder, value, nameof(Folder));
-                FirePropertyChanged(nameof(FullPath));
-            }
-        }
-
-        public string Filename
-        {
-            get
-            {
-                return _filename;
-            }
-            set
-            {
-                SetProperty(ref _filename, value, nameof(Filename));
-                FirePropertyChanged(nameof(FullPath));
-            }
-        }
-
-        public string FullPath
-        {
-            get
-            {
-                return Path.Combine(_folder, _filename);
-            }
-        }
-
-        public bool DisableConversion
-        {
-            get
-            {
-                return _disableConversion;
-            }
-            set
-            {
-                SetProperty(ref _disableConversion, value, nameof(DisableConversion));
-            }
-        }
-
-        public bool CropStart
-        {
-            get
-            {
-                return _cropStart;
-            }
-            set
-            {
-                SetProperty(ref _cropStart, value, nameof(CropStart));
-                FirePropertyChanged(nameof(CroppedLength));
-            }
-        }
-
-        public TimeSpan CropStartTime
-        {
-            get
-            {
-                return _cropStartTime;
-            }
-            set
-            {
-                SetProperty(ref _cropStartTime, value, nameof(CropStartTime));
-                FirePropertyChanged(nameof(CroppedLength));
-            }
-        }
-
-        public bool CropEnd
-        {
-            get
-            {
-                return _cropEnd;
-            }
-            set
-            {
-                SetProperty(ref _cropEnd, value, nameof(CropEnd));
-                FirePropertyChanged(nameof(CroppedLength));
-            }
-        }
-
-        public TimeSpan CropEndTime
-        {
-            get
-            {
-                return _cropEndTime;
-            }
-            set
-            {
-                SetProperty(ref _cropEndTime, value, nameof(CropEndTime));
-                FirePropertyChanged(nameof(CroppedLength));
-            }
-        }
-
-        public TimeSpan CroppedLength
-        {
-            get
-            {
-                if (!_cropStart && !_cropEnd)
-                {
-                    return _video.Length;
+        public TimeSpan CroppedLength {
+            get {
+                if ( !this._cropStart && !this._cropEnd ) {
+                    return this.Video.Length;
                 }
-                else if (!_cropStart && _cropEnd)
-                {
-                    return _cropEndTime;
+                else if ( !this._cropStart && this._cropEnd ) {
+                    return this._cropEndTime;
                 }
-                else if (_cropStart && !_cropEnd)
-                {
-                    return _video.Length - _cropStartTime;
+                else if ( this._cropStart && !this._cropEnd ) {
+                    return this.Video.Length - this._cropStartTime;
                 }
-                else
-                {
-                    return _cropEndTime - _cropStartTime;
+                else {
+                    return this._cropEndTime - this._cropStartTime;
                 }
             }
         }
 
-        public string CroppedLengthStr
-        {
-            get
-            {
-                return CroppedLength.ToDaylessString();
+        public String CroppedLengthStr {
+            get {
+                return this.CroppedLength.ToDaylessString();
             }
         }
 
-        #endregion Properties
+        public Boolean CropStart {
+            get {
+                return this._cropStart;
+            }
 
-        #region Methods
+            set {
+                this.SetProperty( ref this._cropStart, value, nameof( this.CropStart ) );
+                this.FirePropertyChanged( nameof( this.CroppedLength ) );
+            }
+        }
 
-        public override void Validate(string propertyName = null)
-        {
-            base.Validate(propertyName);
+        public TimeSpan CropStartTime {
+            get {
+                return this._cropStartTime;
+            }
 
-            string currentProperty = nameof(Quality);
+            set {
+                this.SetProperty( ref this._cropStartTime, value, nameof( this.CropStartTime ) );
+                this.FirePropertyChanged( nameof( this.CroppedLength ) );
+            }
+        }
 
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_quality == null)
-                {
-                    AddError(currentProperty, "Please select a quality!");
+        public Boolean DisableConversion {
+            get {
+                return this._disableConversion;
+            }
+
+            set {
+                this.SetProperty( ref this._disableConversion, value, nameof( this.DisableConversion ) );
+            }
+        }
+
+        public String Filename {
+            get {
+                return this._filename;
+            }
+
+            set {
+                this.SetProperty( ref this._filename, value, nameof( this.Filename ) );
+                this.FirePropertyChanged( nameof( this.FullPath ) );
+            }
+        }
+
+        public String Folder {
+            get {
+                return this._folder;
+            }
+
+            set {
+                this.SetProperty( ref this._folder, value, nameof( this.Folder ) );
+                this.FirePropertyChanged( nameof( this.FullPath ) );
+            }
+        }
+
+        public String FullPath {
+            get {
+                return Path.Combine( this._folder, this._filename );
+            }
+        }
+
+        public TwitchVideoQuality Quality {
+            get {
+                return this._quality;
+            }
+
+            set {
+                this.SetProperty( ref this._quality, value, nameof( this.Quality ) );
+            }
+        }
+
+        public TwitchVideo Video { get; }
+
+        public VodAuthInfo VodAuthInfo { get; }
+
+        public DownloadParameters( TwitchVideo video, VodAuthInfo vodAuthInfo, TwitchVideoQuality quality, String folder, String filename, Boolean disableConversion ) {
+            if ( String.IsNullOrWhiteSpace( folder ) ) {
+                throw new ArgumentNullException( nameof( folder ) );
+            }
+
+            if ( String.IsNullOrWhiteSpace( filename ) ) {
+                throw new ArgumentNullException( nameof( filename ) );
+            }
+
+            this.Video = video ?? throw new ArgumentNullException( nameof( video ) );
+            this._quality = quality ?? throw new ArgumentNullException( nameof( quality ) );
+            this.VodAuthInfo = vodAuthInfo ?? throw new ArgumentNullException( nameof( vodAuthInfo ) );
+
+            this._folder = folder;
+            this._filename = filename;
+            this._disableConversion = disableConversion;
+
+            this._cropEndTime = video.Length;
+        }
+
+        public override void Validate( String propertyName = null ) {
+            base.Validate( propertyName );
+
+            var currentProperty = nameof( this.Quality );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._quality == null ) {
+                    this.AddError( currentProperty, "Please select a quality!" );
                 }
             }
 
-            currentProperty = nameof(Folder);
+            currentProperty = nameof( this.Folder );
 
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (string.IsNullOrWhiteSpace(_folder))
-                {
-                    AddError(currentProperty, "Please specify a folder!");
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( String.IsNullOrWhiteSpace( this._folder ) ) {
+                    this.AddError( currentProperty, "Please specify a folder!" );
                 }
             }
 
-            currentProperty = nameof(Filename);
+            currentProperty = nameof( this.Filename );
 
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (string.IsNullOrWhiteSpace(_filename))
-                {
-                    AddError(currentProperty, "Please specify a filename!");
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( String.IsNullOrWhiteSpace( this._filename ) ) {
+                    this.AddError( currentProperty, "Please specify a filename!" );
                 }
-                else if (_disableConversion && !_filename.EndsWith(".ts", StringComparison.OrdinalIgnoreCase))
-                {
-                    AddError(currentProperty, "Filename must end with '.ts'!");
+                else if ( this._disableConversion && !this._filename.EndsWith( ".ts", StringComparison.OrdinalIgnoreCase ) ) {
+                    this.AddError( currentProperty, "Filename must end with '.ts'!" );
                 }
-                else if (!_disableConversion && !_filename.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase))
-                {
-                    AddError(currentProperty, "Filename must end with '.mp4'!");
+                else if ( !this._disableConversion && !this._filename.EndsWith( ".mp4", StringComparison.OrdinalIgnoreCase ) ) {
+                    this.AddError( currentProperty, "Filename must end with '.mp4'!" );
                 }
-                else if (FileSystem.FilenameContainsInvalidChars(_filename))
-                {
-                    AddError(currentProperty, "Filename contains invalid characters!");
+                else if ( FileSystem.FilenameContainsInvalidChars( this._filename ) ) {
+                    this.AddError( currentProperty, "Filename contains invalid characters!" );
                 }
             }
 
-            currentProperty = nameof(CropStartTime);
+            currentProperty = nameof( this.CropStartTime );
 
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_cropStart)
-                {
-                    TimeSpan videoLength = _video.Length;
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._cropStart ) {
+                    TimeSpan videoLength = this.Video.Length;
 
-                    if (_cropStartTime < TimeSpan.Zero || _cropStartTime > videoLength)
-                    {
-                        AddError(currentProperty, "Please enter a value between '" + TimeSpan.Zero.ToString() + "' and '" + videoLength.ToDaylessString() + "'!");
+                    if ( this._cropStartTime < TimeSpan.Zero || this._cropStartTime > videoLength ) {
+                        this.AddError( currentProperty, "Please enter a value between '" + TimeSpan.Zero.ToString() + "' and '" + videoLength.ToDaylessString() + "'!" );
                     }
-                    else if (CroppedLength.TotalSeconds < 5)
-                    {
-                        AddError(currentProperty, "The cropped video has to be at least 5s long!");
+                    else if ( this.CroppedLength.TotalSeconds < 5 ) {
+                        this.AddError( currentProperty, "The cropped video has to be at least 5s long!" );
                     }
                 }
             }
 
-            currentProperty = nameof(CropEndTime);
+            currentProperty = nameof( this.CropEndTime );
 
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_cropEnd)
-                {
-                    TimeSpan videoLength = _video.Length;
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._cropEnd ) {
+                    TimeSpan videoLength = this.Video.Length;
 
-                    if (_cropEndTime < TimeSpan.Zero || _cropEndTime > videoLength)
-                    {
-                        AddError(currentProperty, "Please enter a value between '" + TimeSpan.Zero.ToString() + "' and '" + videoLength.ToDaylessString() + "'!");
+                    if ( this._cropEndTime < TimeSpan.Zero || this._cropEndTime > videoLength ) {
+                        this.AddError( currentProperty, "Please enter a value between '" + TimeSpan.Zero.ToString() + "' and '" + videoLength.ToDaylessString() + "'!" );
                     }
-                    else if (_cropStart && (_cropEndTime <= _cropStartTime))
-                    {
-                        AddError(currentProperty, "End time has to be greater than start time!");
+                    else if ( this._cropStart && ( this._cropEndTime <= this._cropStartTime ) ) {
+                        this.AddError( currentProperty, "End time has to be greater than start time!" );
                     }
-                    else if (CroppedLength.TotalSeconds < 5)
-                    {
-                        AddError(currentProperty, "The cropped video has to be at least 5s long!");
+                    else if ( this.CroppedLength.TotalSeconds < 5 ) {
+                        this.AddError( currentProperty, "The cropped video has to be at least 5s long!" );
                     }
                 }
             }
         }
-
-        #endregion Methods
     }
 }

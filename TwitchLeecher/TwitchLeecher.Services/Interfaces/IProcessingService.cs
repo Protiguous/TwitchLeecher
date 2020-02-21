@@ -1,14 +1,14 @@
-﻿using System;
-using TwitchLeecher.Core.Models;
+﻿namespace TwitchLeecher.Services.Interfaces {
 
-namespace TwitchLeecher.Services.Interfaces
-{
-    public interface IProcessingService
-    {
-        string FFMPEGExe { get; }
+    using System;
+    using TwitchLeecher.Core.Models;
 
-        void ConcatParts(Action<string> log, Action<string> setStatus, Action<double> setProgress, VodPlaylist vodPlaylist, string concatFile);
+    public interface IProcessingService {
 
-        void ConvertVideo(Action<string> log, Action<string> setStatus, Action<double> setProgress, Action<bool> setIsIndeterminate, string sourceFile, string outputFile, CropInfo cropInfo);
+        String FFMPEGExe { get; }
+
+        void ConcatParts( Action<String> log, Action<String> setStatus, Action<Double> setProgress, VodPlaylist vodPlaylist, String concatFile );
+
+        void ConvertVideo( Action<String> log, Action<String> setStatus, Action<Double> setProgress, Action<Boolean> setIsIndeterminate, String sourceFile, String outputFile, CropInfo cropInfo );
     }
 }

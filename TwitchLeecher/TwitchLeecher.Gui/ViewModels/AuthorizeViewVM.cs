@@ -5,11 +5,8 @@ using TwitchLeecher.Gui.Interfaces;
 using TwitchLeecher.Shared.Commands;
 using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class AuthorizeViewVM : ViewModelBase
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.ViewModels {
+    public class AuthorizeViewVM : ViewModelBase {
 
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
@@ -19,68 +16,44 @@ namespace TwitchLeecher.Gui.ViewModels
 
         private readonly object _commandLockObject;
 
-        #endregion Fields
-
-        #region Constructor
-
         public AuthorizeViewVM(
             IDialogService dialogService,
             INavigationService navigationService,
-            IEventAggregator eventAggregator)
-        {
-            _dialogService = dialogService;
-            _navigationService = navigationService;
-            _eventAggregator = eventAggregator;
+            IEventAggregator eventAggregator ) {
+            this._dialogService = dialogService;
+            this._navigationService = navigationService;
+            this._eventAggregator = eventAggregator;
 
-            _commandLockObject = new object();
+            this._commandLockObject = new object();
 
-            _eventAggregator.GetEvent<IsAuthorizedChangedEvent>().Subscribe(IsAuthorizedChanged);
+            this._eventAggregator.GetEvent<IsAuthorizedChangedEvent>().Subscribe( this.IsAuthorizedChanged );
         }
 
-        #endregion Constructor
-
-        #region Properties
-
-        public ICommand ConnectCommand
-        {
-            get
-            {
-                if (_connectCommand == null)
-                {
-                    _connectCommand = new DelegateCommand(Connect);
+        public ICommand ConnectCommand {
+            get {
+                if ( this._connectCommand == null ) {
+                    this._connectCommand = new DelegateCommand( this.Connect );
                 }
 
-                return _connectCommand;
+                return this._connectCommand;
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        private void Connect()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _navigationService.ShowTwitchConnect();
+        private void Connect() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._navigationService.ShowTwitchConnect();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void IsAuthorizedChanged(bool isAuthorized)
-        {
-            if (isAuthorized)
-            {
-                _navigationService.ShowRevokeAuthorization();
+        private void IsAuthorizedChanged( bool isAuthorized ) {
+            if ( isAuthorized ) {
+                this._navigationService.ShowRevokeAuthorization();
             }
         }
-
-        #endregion Methods
     }
 }

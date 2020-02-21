@@ -14,11 +14,8 @@ using TwitchLeecher.Shared.Extensions;
 using TwitchLeecher.Shared.Notification;
 using TwitchLeecher.Shared.Reflection;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class MainWindowVM : BindableBase
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.ViewModels {
+    public class MainWindowVM : BindableBase {
 
         private bool _isAuthorized;
         private bool _showDonationButton;
@@ -52,11 +49,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
         private readonly object _commandLockObject;
 
-        #endregion Fields
-
-        #region Constructors
-
-        public MainWindowVM(IKernel kernel,
+        public MainWindowVM( IKernel kernel,
             IEventAggregator eventAggregator,
             ITwitchService twitchService,
             IDialogService dialogService,
@@ -65,519 +58,398 @@ namespace TwitchLeecher.Gui.ViewModels
             ISearchService searchService,
             IPreferencesService preferencesService,
             IRuntimeDataService runtimeDataService,
-            IUpdateService updateService)
-        {
+            IUpdateService updateService ) {
             AssemblyUtil au = AssemblyUtil.Get;
 
-            Title = au.GetProductName() + " " + au.GetAssemblyVersion().Trim();
+            this.Title = au.GetProductName() + " " + au.GetAssemblyVersion().Trim();
 
-            _kernel = kernel;
-            _eventAggregator = eventAggregator;
-            _twitchService = twitchService;
-            _dialogService = dialogService;
-            _donationService = donationService;
-            _navigationService = navigationService;
-            _searchService = searchService;
-            _preferencesService = preferencesService;
-            _runtimeDataService = runtimeDataService;
-            _updateService = updateService;
+            this._kernel = kernel;
+            this._eventAggregator = eventAggregator;
+            this._twitchService = twitchService;
+            this._dialogService = dialogService;
+            this._donationService = donationService;
+            this._navigationService = navigationService;
+            this._searchService = searchService;
+            this._preferencesService = preferencesService;
+            this._runtimeDataService = runtimeDataService;
+            this._updateService = updateService;
 
-            _commandLockObject = new object();
+            this._commandLockObject = new object();
 
-            _eventAggregator.GetEvent<ShowViewEvent>().Subscribe(ShowView);
-            _eventAggregator.GetEvent<IsAuthorizedChangedEvent>().Subscribe(IsAuthorizedChanged);
-            _eventAggregator.GetEvent<PreferencesSavedEvent>().Subscribe(PreferencesSaved);
-            _eventAggregator.GetEvent<VideosCountChangedEvent>().Subscribe(VideosCountChanged);
-            _eventAggregator.GetEvent<DownloadsCountChangedEvent>().Subscribe(DownloadsCountChanged);
+            this._eventAggregator.GetEvent<ShowViewEvent>().Subscribe( this.ShowView );
+            this._eventAggregator.GetEvent<IsAuthorizedChangedEvent>().Subscribe( this.IsAuthorizedChanged );
+            this._eventAggregator.GetEvent<PreferencesSavedEvent>().Subscribe( this.PreferencesSaved );
+            this._eventAggregator.GetEvent<VideosCountChangedEvent>().Subscribe( this.VideosCountChanged );
+            this._eventAggregator.GetEvent<DownloadsCountChangedEvent>().Subscribe( this.DownloadsCountChanged );
 
-            _showDonationButton = _preferencesService.CurrentPreferences.AppShowDonationButton;
+            this._showDonationButton = this._preferencesService.CurrentPreferences.AppShowDonationButton;
         }
 
-        #endregion Constructors
-
-        #region Properties
-
-        public bool IsAuthorized
-        {
-            get
-            {
-                return _isAuthorized;
+        public bool IsAuthorized {
+            get {
+                return this._isAuthorized;
             }
-            private set
-            {
-                SetProperty(ref _isAuthorized, value, nameof(IsAuthorized));
+            private set {
+                this.SetProperty( ref this._isAuthorized, value, nameof( this.IsAuthorized ) );
             }
         }
 
-        public int VideosCount
-        {
-            get
-            {
-                return _videosCount;
+        public int VideosCount {
+            get {
+                return this._videosCount;
             }
-            private set
-            {
-                SetProperty(ref _videosCount, value, nameof(VideosCount));
+            private set {
+                this.SetProperty( ref this._videosCount, value, nameof( this.VideosCount ) );
             }
         }
 
-        public int DownloadsCount
-        {
-            get
-            {
-                return _downloadsCount;
+        public int DownloadsCount {
+            get {
+                return this._downloadsCount;
             }
-            private set
-            {
-                SetProperty(ref _downloadsCount, value, nameof(DownloadsCount));
+            private set {
+                this.SetProperty( ref this._downloadsCount, value, nameof( this.DownloadsCount ) );
             }
         }
 
         public string Title { get; }
 
-        public bool ShowDonationButton
-        {
-            get
-            {
-                return _showDonationButton;
+        public bool ShowDonationButton {
+            get {
+                return this._showDonationButton;
             }
 
-            private set
-            {
-                SetProperty(ref _showDonationButton, value, nameof(ShowDonationButton));
+            private set {
+                this.SetProperty( ref this._showDonationButton, value, nameof( this.ShowDonationButton ) );
             }
         }
 
-        public ViewModelBase MainView
-        {
-            get
-            {
-                return _mainView;
+        public ViewModelBase MainView {
+            get {
+                return this._mainView;
             }
-            set
-            {
-                SetProperty(ref _mainView, value, nameof(MainView));
+            set {
+                this.SetProperty( ref this._mainView, value, nameof( this.MainView ) );
             }
         }
 
-        public ICommand ShowSearchCommand
-        {
-            get
-            {
-                if (_showSearchCommand == null)
-                {
-                    _showSearchCommand = new DelegateCommand(ShowSearch);
+        public ICommand ShowSearchCommand {
+            get {
+                if ( this._showSearchCommand == null ) {
+                    this._showSearchCommand = new DelegateCommand( this.ShowSearch );
                 }
 
-                return _showSearchCommand;
+                return this._showSearchCommand;
             }
         }
 
-        public ICommand ShowDownloadsCommand
-        {
-            get
-            {
-                if (_showDownloadsCommand == null)
-                {
-                    _showDownloadsCommand = new DelegateCommand(ShowDownloads);
+        public ICommand ShowDownloadsCommand {
+            get {
+                if ( this._showDownloadsCommand == null ) {
+                    this._showDownloadsCommand = new DelegateCommand( this.ShowDownloads );
                 }
 
-                return _showDownloadsCommand;
+                return this._showDownloadsCommand;
             }
         }
 
-        public ICommand ShowAuthorizeCommand
-        {
-            get
-            {
-                if (_showAuthorizeCommand == null)
-                {
-                    _showAuthorizeCommand = new DelegateCommand(ShowAuthorize);
+        public ICommand ShowAuthorizeCommand {
+            get {
+                if ( this._showAuthorizeCommand == null ) {
+                    this._showAuthorizeCommand = new DelegateCommand( this.ShowAuthorize );
                 }
 
-                return _showAuthorizeCommand;
+                return this._showAuthorizeCommand;
             }
         }
 
-        public ICommand ShowPreferencesCommand
-        {
-            get
-            {
-                if (_showPreferencesCommand == null)
-                {
-                    _showPreferencesCommand = new DelegateCommand(ShowPreferences);
+        public ICommand ShowPreferencesCommand {
+            get {
+                if ( this._showPreferencesCommand == null ) {
+                    this._showPreferencesCommand = new DelegateCommand( this.ShowPreferences );
                 }
 
-                return _showPreferencesCommand;
+                return this._showPreferencesCommand;
             }
         }
 
-        public ICommand DonateCommand
-        {
-            get
-            {
-                if (_donateCommand == null)
-                {
-                    _donateCommand = new DelegateCommand(Donate);
+        public ICommand DonateCommand {
+            get {
+                if ( this._donateCommand == null ) {
+                    this._donateCommand = new DelegateCommand( this.Donate );
                 }
 
-                return _donateCommand;
+                return this._donateCommand;
             }
         }
 
-        public ICommand ShowInfoCommand
-        {
-            get
-            {
-                if (_showInfoCommand == null)
-                {
-                    _showInfoCommand = new DelegateCommand(ShowInfo);
+        public ICommand ShowInfoCommand {
+            get {
+                if ( this._showInfoCommand == null ) {
+                    this._showInfoCommand = new DelegateCommand( this.ShowInfo );
                 }
 
-                return _showInfoCommand;
+                return this._showInfoCommand;
             }
         }
 
-        public ICommand DoMinimizeCommand
-        {
-            get
-            {
-                if (_doMinimizeCommand == null)
-                {
-                    _doMinimizeCommand = new DelegateCommand<Window>(DoMinimize);
+        public ICommand DoMinimizeCommand {
+            get {
+                if ( this._doMinimizeCommand == null ) {
+                    this._doMinimizeCommand = new DelegateCommand<Window>( this.DoMinimize );
                 }
 
-                return _doMinimizeCommand;
+                return this._doMinimizeCommand;
             }
         }
 
-        public ICommand DoMaximizeRestoreCommand
-        {
-            get
-            {
-                if (_doMmaximizeRestoreCommand == null)
-                {
-                    _doMmaximizeRestoreCommand = new DelegateCommand<Window>(DoMaximizeRestore);
+        public ICommand DoMaximizeRestoreCommand {
+            get {
+                if ( this._doMmaximizeRestoreCommand == null ) {
+                    this._doMmaximizeRestoreCommand = new DelegateCommand<Window>( this.DoMaximizeRestore );
                 }
 
-                return _doMmaximizeRestoreCommand;
+                return this._doMmaximizeRestoreCommand;
             }
         }
 
-        public ICommand DoCloseCommand
-        {
-            get
-            {
-                if (_doCloseCommand == null)
-                {
-                    _doCloseCommand = new DelegateCommand<Window>(DoClose);
+        public ICommand DoCloseCommand {
+            get {
+                if ( this._doCloseCommand == null ) {
+                    this._doCloseCommand = new DelegateCommand<Window>( this.DoClose );
                 }
 
-                return _doCloseCommand;
+                return this._doCloseCommand;
             }
         }
 
-        public ICommand RequestCloseCommand
-        {
-            get
-            {
-                if (_requestCloseCommand == null)
-                {
-                    _requestCloseCommand = new DelegateCommand(() => { }, CloseApplication);
+        public ICommand RequestCloseCommand {
+            get {
+                if ( this._requestCloseCommand == null ) {
+                    this._requestCloseCommand = new DelegateCommand( () => { }, this.CloseApplication );
                 }
 
-                return _requestCloseCommand;
+                return this._requestCloseCommand;
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        private void ShowSearch()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (_videosCount > 0)
-                    {
-                        _navigationService.ShowSearchResults();
+        private void ShowSearch() {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( this._videosCount > 0 ) {
+                        this._navigationService.ShowSearchResults();
                     }
-                    else
-                    {
-                        _navigationService.ShowSearch();
+                    else {
+                        this._navigationService.ShowSearch();
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ShowDownloads()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _navigationService.ShowDownloads();
+        private void ShowDownloads() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._navigationService.ShowDownloads();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ShowAuthorize()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (_twitchService.IsAuthorized)
-                    {
-                        _navigationService.ShowRevokeAuthorization();
+        private void ShowAuthorize() {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( this._twitchService.IsAuthorized ) {
+                        this._navigationService.ShowRevokeAuthorization();
                     }
-                    else
-                    {
-                        _navigationService.ShowAuthorize();
+                    else {
+                        this._navigationService.ShowAuthorize();
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ShowPreferences()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _navigationService.ShowPreferences();
+        private void ShowPreferences() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._navigationService.ShowPreferences();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void Donate()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _donationService.OpenDonationPage();
+        private void Donate() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._donationService.OpenDonationPage();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ShowInfo()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _navigationService.ShowInfo();
+        private void ShowInfo() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._navigationService.ShowInfo();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void DoMinimize(Window window)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (window == null)
-                    {
-                        throw new ArgumentNullException(nameof(window));
+        private void DoMinimize( Window window ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( window == null ) {
+                        throw new ArgumentNullException( nameof( window ) );
                     }
 
                     window.WindowState = WindowState.Minimized;
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void DoMaximizeRestore(Window window)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (window == null)
-                    {
-                        throw new ArgumentNullException(nameof(window));
+        private void DoMaximizeRestore( Window window ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( window == null ) {
+                        throw new ArgumentNullException( nameof( window ) );
                     }
 
                     window.WindowState = window.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void DoClose(Window window)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (window == null)
-                    {
-                        throw new ArgumentNullException(nameof(window));
+        private void DoClose( Window window ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( window == null ) {
+                        throw new ArgumentNullException( nameof( window ) );
                     }
 
                     window.Close();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ShowView(ViewModelBase contentVM)
-        {
-            if (contentVM != null)
-            {
-                MainView = contentVM;
+        private void ShowView( ViewModelBase contentVM ) {
+            if ( contentVM != null ) {
+                this.MainView = contentVM;
             }
         }
 
-        private void IsAuthorizedChanged(bool isAuthorized)
-        {
-            IsAuthorized = isAuthorized;
+        private void IsAuthorizedChanged( bool isAuthorized ) {
+            this.IsAuthorized = isAuthorized;
         }
 
-        private void PreferencesSaved()
-        {
-            try
-            {
-                ShowDonationButton = _preferencesService.CurrentPreferences.AppShowDonationButton;
+        private void PreferencesSaved() {
+            try {
+                this.ShowDonationButton = this._preferencesService.CurrentPreferences.AppShowDonationButton;
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void VideosCountChanged(int count)
-        {
-            VideosCount = count;
+        private void VideosCountChanged( int count ) {
+            this.VideosCount = count;
         }
 
-        private void DownloadsCountChanged(int count)
-        {
-            DownloadsCount = count;
+        private void DownloadsCountChanged( int count ) {
+            this.DownloadsCount = count;
         }
 
-        public void Loaded()
-        {
-            try
-            {
-                Preferences currentPrefs = _preferencesService.CurrentPreferences.Clone();
+        public void Loaded() {
+            try {
+                Preferences currentPrefs = this._preferencesService.CurrentPreferences.Clone();
 
                 bool updateAvailable = false;
 
-                if (currentPrefs.AppCheckForUpdates)
-                {
-                    UpdateInfo updateInfo = _updateService.CheckForUpdate();
+                if ( currentPrefs.AppCheckForUpdates ) {
+                    UpdateInfo updateInfo = this._updateService.CheckForUpdate();
 
-                    if (updateInfo != null)
-                    {
+                    if ( updateInfo != null ) {
                         updateAvailable = true;
-                        _navigationService.ShowUpdateInfo(updateInfo);
+                        this._navigationService.ShowUpdateInfo( updateInfo );
                     }
                 }
 
                 bool searchOnStartup = false;
 
-                if (!updateAvailable && currentPrefs.SearchOnStartup)
-                {
+                if ( !updateAvailable && currentPrefs.SearchOnStartup ) {
                     currentPrefs.Validate();
 
-                    if (!currentPrefs.HasErrors)
-                    {
+                    if ( !currentPrefs.HasErrors ) {
                         searchOnStartup = true;
 
-                        SearchParameters searchParams = new SearchParameters(SearchType.Channel)
-                        {
+                        SearchParameters searchParams = new SearchParameters( SearchType.Channel ) {
                             Channel = currentPrefs.SearchChannelName,
                             VideoType = currentPrefs.SearchVideoType,
                             LoadLimitType = currentPrefs.SearchLoadLimitType,
-                            LoadFrom = DateTime.Now.Date.AddDays(-currentPrefs.SearchLoadLastDays),
-                            LoadFromDefault = DateTime.Now.Date.AddDays(-currentPrefs.SearchLoadLastDays),
+                            LoadFrom = DateTime.Now.Date.AddDays( -currentPrefs.SearchLoadLastDays ),
+                            LoadFromDefault = DateTime.Now.Date.AddDays( -currentPrefs.SearchLoadLastDays ),
                             LoadTo = DateTime.Now.Date,
                             LoadToDefault = DateTime.Now.Date,
                             LoadLastVods = currentPrefs.SearchLoadLastVods
                         };
 
-                        _searchService.PerformSearch(searchParams);
+                        this._searchService.PerformSearch( searchParams );
                     }
                 }
 
-                if (!updateAvailable && !searchOnStartup)
-                {
-                    _navigationService.ShowWelcome();
+                if ( !updateAvailable && !searchOnStartup ) {
+                    this._navigationService.ShowWelcome();
                 }
 
-                _twitchService.Authorize(_runtimeDataService.RuntimeData.AccessToken);
+                this._twitchService.Authorize( this._runtimeDataService.RuntimeData.AccessToken );
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private bool CloseApplication()
-        {
-            try
-            {
-                _twitchService.Pause();
+        private bool CloseApplication() {
+            try {
+                this._twitchService.Pause();
 
-                if (!_twitchService.CanShutdown())
-                {
-                    MessageBoxResult result = _dialogService.ShowMessageBox("Do you want to abort all running downloads and exit the application?", "Exit Application", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if ( !this._twitchService.CanShutdown() ) {
+                    MessageBoxResult result = this._dialogService.ShowMessageBox( "Do you want to abort all running downloads and exit the application?", "Exit Application", MessageBoxButton.YesNo, MessageBoxImage.Warning );
 
-                    if (result == MessageBoxResult.No)
-                    {
-                        _twitchService.Resume();
+                    if ( result == MessageBoxResult.No ) {
+                        this._twitchService.Resume();
                         return false;
                     }
                 }
 
-                _twitchService.Shutdown();
+                this._twitchService.Shutdown();
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
 
             return true;
         }
-
-        #endregion Methods
     }
 }

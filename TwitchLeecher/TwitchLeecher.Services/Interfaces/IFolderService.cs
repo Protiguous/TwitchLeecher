@@ -1,11 +1,11 @@
-﻿namespace TwitchLeecher.Services.Interfaces
-{
-    public interface IFolderService
-    {
-        string GetAppDataFolder();
+﻿namespace TwitchLeecher.Services.Interfaces {
 
-        string GetTempFolder();
+    public interface IFolderService {
 
-        string GetDownloadFolder();
+        System.String GetAppDataFolder();
+
+        System.String GetDownloadFolder();
+
+        System.String GetTempFolder();
     }
 }

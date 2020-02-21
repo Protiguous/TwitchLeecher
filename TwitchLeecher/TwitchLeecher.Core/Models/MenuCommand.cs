@@ -1,42 +1,31 @@
-﻿using System;
-using System.Windows.Input;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class MenuCommand
-    {
-        #region Constructors
+    using System;
+    using System.Windows.Input;
 
-        public MenuCommand(ICommand command, string label, string icon, int width = 120)
-        {
-            if (string.IsNullOrWhiteSpace(label))
-            {
-                throw new ArgumentNullException(nameof(label));
-            }
-
-            if (string.IsNullOrWhiteSpace(icon))
-            {
-                throw new ArgumentNullException(nameof(icon));
-            }
-
-            Command = command ?? throw new ArgumentNullException(nameof(command));
-            Label = label;
-            Icon = icon;
-            Width = width;
-        }
-
-        #endregion Constructors
-
-        #region Properties
+    public class MenuCommand {
 
         public ICommand Command { get; private set; }
 
-        public string Label { get; private set; }
+        public String Icon { get; private set; }
 
-        public string Icon { get; private set; }
+        public String Label { get; private set; }
 
-        public double Width { get; private set; }
+        public Double Width { get; private set; }
 
-        #endregion Properties
+        public MenuCommand( ICommand command, String label, String icon, Int32 width = 120 ) {
+            if ( String.IsNullOrWhiteSpace( label ) ) {
+                throw new ArgumentNullException( nameof( label ) );
+            }
+
+            if ( String.IsNullOrWhiteSpace( icon ) ) {
+                throw new ArgumentNullException( nameof( icon ) );
+            }
+
+            this.Command = command ?? throw new ArgumentNullException( nameof( command ) );
+            this.Label = label;
+            this.Icon = icon;
+            this.Width = width;
+        }
     }
 }

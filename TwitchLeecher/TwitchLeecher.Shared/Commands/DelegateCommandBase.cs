@@ -1,132 +1,99 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using System.Windows.Input;
+namespace TwitchLeecher.Shared.Commands {
 
-namespace TwitchLeecher.Shared.Commands
-{
-    public abstract class DelegateCommandBase : ICommand
-    {
-        #region Fields
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
+    using System.Windows.Input;
 
-        private readonly HashSet<string> _propertiesToObserve;
+    public abstract class DelegateCommandBase : ICommand {
+
+        private readonly HashSet<String> _propertiesToObserve;
         private INotifyPropertyChanged _inpc;
 
-        protected readonly Func<object, Task> _executeMethod;
-        protected Func<object, bool> _canExecuteMethod;
+        protected readonly Func<Object, Task> _executeMethod;
+        protected Func<Object, Boolean> _canExecuteMethod;
 
-        #endregion Fields
-
-        #region Constructors
-
-        protected DelegateCommandBase(Action<object> executeMethod, Func<object, bool> canExecuteMethod)
-        {
-            if (executeMethod == null || canExecuteMethod == null)
-            {
-                throw new ArgumentNullException(nameof(executeMethod), "Neither the executeMethod nor the canExecuteMethod delegates can be null");
+        protected DelegateCommandBase( Action<Object> executeMethod, Func<Object, Boolean> canExecuteMethod ) {
+            if ( executeMethod == null || canExecuteMethod == null ) {
+                throw new ArgumentNullException( nameof( executeMethod ), "Neither the executeMethod nor the canExecuteMethod delegates can be null" );
             }
 
-            _propertiesToObserve = new HashSet<string>();
-            _executeMethod = (arg) => { executeMethod(arg); return Task.Delay(0); };
-            _canExecuteMethod = canExecuteMethod;
+            this._propertiesToObserve = new HashSet<String>();
+            this._executeMethod = ( arg ) => { executeMethod( arg ); return Task.Delay( 0 ); };
+            this._canExecuteMethod = canExecuteMethod;
         }
 
-        protected DelegateCommandBase(Func<object, Task> executeMethod, Func<object, bool> canExecuteMethod)
-        {
-            if (executeMethod == null || canExecuteMethod == null)
-            {
-                throw new ArgumentNullException(nameof(executeMethod), "Neither the executeMethod nor the canExecuteMethod delegates can be null");
+        protected DelegateCommandBase( Func<Object, Task> executeMethod, Func<Object, Boolean> canExecuteMethod ) {
+            if ( executeMethod == null || canExecuteMethod == null ) {
+                throw new ArgumentNullException( nameof( executeMethod ), "Neither the executeMethod nor the canExecuteMethod delegates can be null" );
             }
-            _propertiesToObserve = new HashSet<string>();
-            _executeMethod = executeMethod;
-            _canExecuteMethod = canExecuteMethod;
+            this._propertiesToObserve = new HashSet<String>();
+            this._executeMethod = executeMethod;
+            this._canExecuteMethod = canExecuteMethod;
         }
 
-        #endregion Constructors
+        public virtual event EventHandler CanExecuteChanged;
 
-        #region Methods
-
-        async void ICommand.Execute(object parameter)
-        {
-            await Execute(parameter);
+        private void Inpc_PropertyChanged( Object sender, PropertyChangedEventArgs e ) {
+            if ( this._propertiesToObserve.Contains( e.PropertyName ) )
+                this.FireCanExecuteChanged();
         }
 
-        bool ICommand.CanExecute(object parameter)
-        {
-            return CanExecute(parameter);
+        protected void AddPropertyToObserve( String property ) {
+            if ( this._propertiesToObserve.Contains( property ) )
+                throw new ArgumentException( String.Format( "{0} is already being observed.", property ) );
+
+            this._propertiesToObserve.Add( property );
         }
 
-        protected virtual async Task Execute(object parameter)
-        {
-            await _executeMethod(parameter);
-        }
-
-        protected virtual bool CanExecute(object parameter)
-        {
-            return _canExecuteMethod(parameter);
-        }
-
-        protected internal void ObservesPropertyInternal<T>(Expression<Func<T>> propertyExpression)
-        {
-            AddPropertyToObserve(PropertySupport.ExtractPropertyName(propertyExpression));
-            HookInpc(propertyExpression.Body as MemberExpression);
-        }
-
-        protected internal void ObservesCanExecuteInternal(Expression<Func<object, bool>> canExecuteExpression)
-        {
-            _canExecuteMethod = canExecuteExpression.Compile();
-            AddPropertyToObserve(PropertySupport.ExtractPropertyNameFromLambda(canExecuteExpression));
-            HookInpc(canExecuteExpression.Body as MemberExpression);
-        }
-
-        protected void HookInpc(MemberExpression expression)
-        {
-            if (expression == null)
+        protected void HookInpc( MemberExpression expression ) {
+            if ( expression == null )
                 return;
 
-            if (_inpc == null)
-            {
-                if (expression.Expression is ConstantExpression constantExpression)
-                {
-                    _inpc = constantExpression.Value as INotifyPropertyChanged;
-                    if (_inpc != null)
-                        _inpc.PropertyChanged += Inpc_PropertyChanged;
+            if ( this._inpc == null ) {
+                if ( expression.Expression is ConstantExpression constantExpression ) {
+                    this._inpc = constantExpression.Value as INotifyPropertyChanged;
+                    if ( this._inpc != null )
+                        this._inpc.PropertyChanged += this.Inpc_PropertyChanged;
                 }
             }
         }
 
-        protected void AddPropertyToObserve(string property)
-        {
-            if (_propertiesToObserve.Contains(property))
-                throw new ArgumentException(String.Format("{0} is already being observed.", property));
-
-            _propertiesToObserve.Add(property);
+        protected virtual void OnCanExecuteChanged() {
+            CanExecuteChanged?.Invoke( this, EventArgs.Empty );
         }
 
-        private void Inpc_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (_propertiesToObserve.Contains(e.PropertyName))
-                FireCanExecuteChanged();
+        protected internal void ObservesCanExecuteInternal( Expression<Func<Object, Boolean>> canExecuteExpression ) {
+            this._canExecuteMethod = canExecuteExpression.Compile();
+            this.AddPropertyToObserve( PropertySupport.ExtractPropertyNameFromLambda( canExecuteExpression ) );
+            this.HookInpc( canExecuteExpression.Body as MemberExpression );
         }
 
-        #endregion Methods
-
-        #region Events
-
-        public virtual event EventHandler CanExecuteChanged;
-
-        protected virtual void OnCanExecuteChanged()
-        {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        protected internal void ObservesPropertyInternal<T>( Expression<Func<T>> propertyExpression ) {
+            this.AddPropertyToObserve( PropertySupport.ExtractPropertyName( propertyExpression ) );
+            this.HookInpc( propertyExpression.Body as MemberExpression );
         }
 
-        public void FireCanExecuteChanged()
-        {
-            OnCanExecuteChanged();
+        public void FireCanExecuteChanged() {
+            this.OnCanExecuteChanged();
         }
 
-        #endregion Events
+        protected virtual Boolean CanExecute( Object parameter ) {
+            return this._canExecuteMethod( parameter );
+        }
+
+        protected virtual async Task Execute( Object parameter ) {
+            await this._executeMethod( parameter );
+        }
+
+        async void ICommand.Execute( Object parameter ) {
+            await this.Execute( parameter );
+        }
+
+        Boolean ICommand.CanExecute( Object parameter ) {
+            return this.CanExecute( parameter );
+        }
     }
 }

@@ -1,103 +1,70 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using static TwitchLeecher.Shared.Native.NativeDelegates;
-using static TwitchLeecher.Shared.Native.NativeMethods;
-using static TwitchLeecher.Shared.Native.NativeStructs;
+﻿namespace TwitchLeecher.Shared.Native {
 
-namespace TwitchLeecher.Shared.Native
-{
-    public class NativeDisplay
-    {
-        #region Constructor
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using static TwitchLeecher.Shared.Native.NativeDelegates;
+    using static TwitchLeecher.Shared.Native.NativeMethods;
+    using static TwitchLeecher.Shared.Native.NativeStructs;
 
-        private NativeDisplay(IntPtr hMonitor, IntPtr hdc)
-        {
-            MonitorInfoEx info = new MonitorInfoEx();
-            GetMonitorInfoNative(new HandleRef(null, hMonitor), info);
-
-            IsPrimary = ((info.dwFlags & NativeFlags.MonitorinfofPrimary) != 0);
-            Name = new string(info.szDevice).TrimEnd((char)0);
-            Handle = hMonitor;
-
-            Bounds = new System.Windows.Rect(
-                        info.rcMonitor.left, info.rcMonitor.top,
-                        info.rcMonitor.right - info.rcMonitor.left,
-                        info.rcMonitor.bottom - info.rcMonitor.top);
-
-            WorkingArea = new System.Windows.Rect(
-                        info.rcWork.left, info.rcWork.top,
-                        info.rcWork.right - info.rcWork.left,
-                        info.rcWork.bottom - info.rcWork.top);
-        }
-
-        #endregion Constructor
-
-        #region Properties
+    public class NativeDisplay {
 
         public System.Windows.Rect Bounds { get; }
 
         public IntPtr Handle { get; }
 
-        public bool IsPrimary { get; }
+        public Boolean IsPrimary { get; }
 
-        public string Name { get; }
+        public String Name { get; }
 
         public System.Windows.Rect WorkingArea { get; }
 
-        #endregion Properties
+        private NativeDisplay( IntPtr hMonitor, IntPtr hdc ) {
+            MonitorInfoEx info = new MonitorInfoEx();
+            GetMonitorInfoNative( new HandleRef( null, hMonitor ), info );
 
-        #region Methods
+            this.IsPrimary = ( ( info.dwFlags & NativeFlags.MonitorinfofPrimary ) != 0 );
+            this.Name = new String( info.szDevice ).TrimEnd( ( Char )0 );
+            this.Handle = hMonitor;
 
-        public static IEnumerable<NativeDisplay> GetAllDisplays()
-        {
+            this.Bounds = new System.Windows.Rect(
+                        info.rcMonitor.left, info.rcMonitor.top,
+                        info.rcMonitor.right - info.rcMonitor.left,
+                        info.rcMonitor.bottom - info.rcMonitor.top );
+
+            this.WorkingArea = new System.Windows.Rect(
+                        info.rcWork.left, info.rcWork.top,
+                        info.rcWork.right - info.rcWork.left,
+                        info.rcWork.bottom - info.rcWork.top );
+        }
+
+        public static IEnumerable<NativeDisplay> GetAllDisplays() {
             DisplayEnumCallback closure = new DisplayEnumCallback();
-            MonitorEnumProc proc = new MonitorEnumProc(closure.Callback);
-            EnumDisplayMonitorsNative(new HandleRef(null, IntPtr.Zero), IntPtr.Zero, proc, IntPtr.Zero);
+            MonitorEnumProc proc = new MonitorEnumProc( closure.Callback );
+            EnumDisplayMonitorsNative( new HandleRef( null, IntPtr.Zero ), IntPtr.Zero, proc, IntPtr.Zero );
             return closure.Displays.Cast<NativeDisplay>();
         }
 
-        public static NativeDisplay GetDisplayFromWindow(IntPtr handle)
-        {
-            IntPtr hMonitor = MonitorFromWindowNative(handle, NativeFlags.MONITOR_DEFAULTTONEAREST);
+        public static NativeDisplay GetDisplayFromWindow( IntPtr handle ) {
+            IntPtr hMonitor = MonitorFromWindowNative( handle, NativeFlags.MONITOR_DEFAULTTONEAREST );
 
-            return GetAllDisplays().Where(d => d.Handle == hMonitor).First();
+            return GetAllDisplays().Where( d => d.Handle == hMonitor ).First();
         }
 
-        #endregion Methods
-
-        #region Classes
-
-        private class DisplayEnumCallback
-        {
-            #region Constructors
-
-            public DisplayEnumCallback()
-            {
-                Displays = new ArrayList();
-            }
-
-            #endregion Constructors
-
-            #region Properties
+        private class DisplayEnumCallback {
 
             public ArrayList Displays { get; private set; }
 
-            #endregion Properties
-
-            #region Methods
-
-            public bool Callback(IntPtr hMonitor, IntPtr hdcMonitor, IntPtr lprcMonitor, IntPtr dwData)
-            {
-                Displays.Add(new NativeDisplay(hMonitor, hdcMonitor));
-                return true;
+            public DisplayEnumCallback() {
+                this.Displays = new ArrayList();
             }
 
-            #endregion Methods
+            public Boolean Callback( IntPtr hMonitor, IntPtr hdcMonitor, IntPtr lprcMonitor, IntPtr dwData ) {
+                this.Displays.Add( new NativeDisplay( hMonitor, hdcMonitor ) );
+                return true;
+            }
         }
-
-        #endregion Classes
     }
 }

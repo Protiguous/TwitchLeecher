@@ -1,7 +1,6 @@
-﻿namespace TwitchLeecher.Core.Enums
-{
-    public enum DownloadState
-    {
+﻿namespace TwitchLeecher.Core.Enums {
+
+    public enum DownloadState {
         Queued,
         Paused,
         Downloading,

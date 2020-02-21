@@ -1,6 +1,5 @@
-﻿namespace TwitchLeecher.Services.Interfaces
-{
-    public interface IDownloadService
-    {
+﻿namespace TwitchLeecher.Services.Interfaces {
+
+    public interface IDownloadService {
     }
 }

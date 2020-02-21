@@ -1,374 +1,215 @@
-﻿using System;
-using System.IO;
-using TwitchLeecher.Core.Enums;
-using TwitchLeecher.Shared.Helpers;
-using TwitchLeecher.Shared.IO;
-using TwitchLeecher.Shared.Notification;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class Preferences : BindableBase
-    {
-        #region Fields
+    using System;
+    using System.IO;
+    using TwitchLeecher.Core.Enums;
+    using TwitchLeecher.Shared.Helpers;
+    using TwitchLeecher.Shared.IO;
+    using TwitchLeecher.Shared.Notification;
 
+    public class Preferences : BindableBase {
+
+        private Boolean _appCheckForUpdates;
+        private Boolean _appShowDonationButton;
+        private Boolean _downloadDisableConversion;
+        private String _downloadFileName;
+        private String _downloadFolder;
+        private Boolean _downloadRemoveCompleted;
+        private Boolean _downloadSubfoldersForFav;
+        private String _downloadTempFolder;
+        private String _miscExternalPlayer;
+        private Boolean _miscUseExternalPlayer;
+        private String _searchChannelName;
+        private RangeObservableCollection<String> _searchFavouriteChannels;
+        private Int32 _searchLoadLastDays;
+        private Int32 _searchLoadLastVods;
+        private LoadLimitType _searchLoadLimitType;
+        private Boolean _searchOnStartup;
+        private VideoType _searchVideoType;
         private Version _version;
 
-        private bool _appCheckForUpdates;
-
-        private bool _appShowDonationButton;
-
-        private RangeObservableCollection<string> _searchFavouriteChannels;
-
-        private string _searchChannelName;
-
-        private VideoType _searchVideoType;
-
-        private LoadLimitType _searchLoadLimitType;
-
-        private int _searchLoadLastDays;
-
-        private int _searchLoadLastVods;
-
-        private bool _searchOnStartup;
-
-        private string _downloadTempFolder;
-
-        private string _downloadFolder;
-
-        private string _downloadFileName;
-
-        private bool _downloadSubfoldersForFav;
-
-        private bool _downloadRemoveCompleted;
-
-        private bool _downloadDisableConversion;
-
-        private bool _miscUseExternalPlayer;
-
-        private string _miscExternalPlayer;
-
-        #endregion Fields
-
-        #region Properties
-
-        public Version Version
-        {
-            get
-            {
-                return _version;
+        public Boolean AppCheckForUpdates {
+            get {
+                return this._appCheckForUpdates;
             }
-            set
-            {
-                SetProperty(ref _version, value);
+
+            set {
+                this.SetProperty( ref this._appCheckForUpdates, value );
             }
         }
 
-        public bool AppCheckForUpdates
-        {
-            get
-            {
-                return _appCheckForUpdates;
+        public Boolean AppShowDonationButton {
+            get {
+                return this._appShowDonationButton;
             }
-            set
-            {
-                SetProperty(ref _appCheckForUpdates, value);
+
+            set {
+                this.SetProperty( ref this._appShowDonationButton, value );
             }
         }
 
-        public bool AppShowDonationButton
-        {
-            get
-            {
-                return _appShowDonationButton;
+        public Boolean DownloadDisableConversion {
+            get {
+                return this._downloadDisableConversion;
             }
-            set
-            {
-                SetProperty(ref _appShowDonationButton, value);
+
+            set {
+                this.SetProperty( ref this._downloadDisableConversion, value );
             }
         }
 
-        public bool MiscUseExternalPlayer
-        {
-            get
-            {
-                return _miscUseExternalPlayer;
+        public String DownloadFileName {
+            get {
+                return this._downloadFileName;
             }
-            set
-            {
-                SetProperty(ref _miscUseExternalPlayer, value);
+
+            set {
+                this.SetProperty( ref this._downloadFileName, value );
             }
         }
 
-        public string MiscExternalPlayer
-        {
-            get
-            {
-                return _miscExternalPlayer;
+        public String DownloadFolder {
+            get {
+                return this._downloadFolder;
             }
 
-            set
-            {
-                SetProperty(ref _miscExternalPlayer, value);
+            set {
+                this.SetProperty( ref this._downloadFolder, value );
             }
         }
 
-        public RangeObservableCollection<string> SearchFavouriteChannels
-        {
-            get
-            {
-                if (_searchFavouriteChannels == null)
-                {
-                    _searchFavouriteChannels = new RangeObservableCollection<string>();
+        public Boolean DownloadRemoveCompleted {
+            get {
+                return this._downloadRemoveCompleted;
+            }
+
+            set {
+                this.SetProperty( ref this._downloadRemoveCompleted, value );
+            }
+        }
+
+        public Boolean DownloadSubfoldersForFav {
+            get {
+                return this._downloadSubfoldersForFav;
+            }
+
+            set {
+                this.SetProperty( ref this._downloadSubfoldersForFav, value );
+            }
+        }
+
+        public String DownloadTempFolder {
+            get {
+                return this._downloadTempFolder;
+            }
+
+            set {
+                this.SetProperty( ref this._downloadTempFolder, value );
+            }
+        }
+
+        public String MiscExternalPlayer {
+            get {
+                return this._miscExternalPlayer;
+            }
+
+            set {
+                this.SetProperty( ref this._miscExternalPlayer, value );
+            }
+        }
+
+        public Boolean MiscUseExternalPlayer {
+            get {
+                return this._miscUseExternalPlayer;
+            }
+
+            set {
+                this.SetProperty( ref this._miscUseExternalPlayer, value );
+            }
+        }
+
+        public String SearchChannelName {
+            get {
+                return this._searchChannelName;
+            }
+
+            set {
+                this.SetProperty( ref this._searchChannelName, value );
+            }
+        }
+
+        public RangeObservableCollection<String> SearchFavouriteChannels {
+            get {
+                if ( this._searchFavouriteChannels == null ) {
+                    this._searchFavouriteChannels = new RangeObservableCollection<String>();
                 }
 
-                return _searchFavouriteChannels;
+                return this._searchFavouriteChannels;
             }
         }
 
-        public string SearchChannelName
-        {
-            get
-            {
-                return _searchChannelName;
+        public Int32 SearchLoadLastDays {
+            get {
+                return this._searchLoadLastDays;
             }
-            set
-            {
-                SetProperty(ref _searchChannelName, value);
+
+            set {
+                this.SetProperty( ref this._searchLoadLastDays, value );
             }
         }
 
-        public VideoType SearchVideoType
-        {
-            get
-            {
-                return _searchVideoType;
+        public Int32 SearchLoadLastVods {
+            get {
+                return this._searchLoadLastVods;
             }
-            set
-            {
-                SetProperty(ref _searchVideoType, value);
+
+            set {
+                this.SetProperty( ref this._searchLoadLastVods, value );
             }
         }
 
-        public LoadLimitType SearchLoadLimitType
-        {
-            get
-            {
-                return _searchLoadLimitType;
+        public LoadLimitType SearchLoadLimitType {
+            get {
+                return this._searchLoadLimitType;
             }
-            set
-            {
-                SetProperty(ref _searchLoadLimitType, value);
+
+            set {
+                this.SetProperty( ref this._searchLoadLimitType, value );
             }
         }
 
-        public int SearchLoadLastDays
-        {
-            get
-            {
-                return _searchLoadLastDays;
+        public Boolean SearchOnStartup {
+            get {
+                return this._searchOnStartup;
             }
-            set
-            {
-                SetProperty(ref _searchLoadLastDays, value);
+
+            set {
+                this.SetProperty( ref this._searchOnStartup, value );
             }
         }
 
-        public int SearchLoadLastVods
-        {
-            get
-            {
-                return _searchLoadLastVods;
+        public VideoType SearchVideoType {
+            get {
+                return this._searchVideoType;
             }
-            set
-            {
-                SetProperty(ref _searchLoadLastVods, value);
+
+            set {
+                this.SetProperty( ref this._searchVideoType, value );
             }
         }
 
-        public bool SearchOnStartup
-        {
-            get
-            {
-                return _searchOnStartup;
+        public Version Version {
+            get {
+                return this._version;
             }
-            set
-            {
-                SetProperty(ref _searchOnStartup, value);
+
+            set {
+                this.SetProperty( ref this._version, value );
             }
         }
 
-        public string DownloadTempFolder
-        {
-            get
-            {
-                return _downloadTempFolder;
-            }
-            set
-            {
-                SetProperty(ref _downloadTempFolder, value);
-            }
-        }
-
-        public string DownloadFolder
-        {
-            get
-            {
-                return _downloadFolder;
-            }
-            set
-            {
-                SetProperty(ref _downloadFolder, value);
-            }
-        }
-
-        public string DownloadFileName
-        {
-            get
-            {
-                return _downloadFileName;
-            }
-            set
-            {
-                SetProperty(ref _downloadFileName, value);
-            }
-        }
-
-        public bool DownloadSubfoldersForFav
-        {
-            get
-            {
-                return _downloadSubfoldersForFav;
-            }
-            set
-            {
-                SetProperty(ref _downloadSubfoldersForFav, value);
-            }
-        }
-
-        public bool DownloadRemoveCompleted
-        {
-            get
-            {
-                return _downloadRemoveCompleted;
-            }
-            set
-            {
-                SetProperty(ref _downloadRemoveCompleted, value);
-            }
-        }
-
-        public bool DownloadDisableConversion
-        {
-            get
-            {
-                return _downloadDisableConversion;
-            }
-            set
-            {
-                SetProperty(ref _downloadDisableConversion, value);
-            }
-        }
-
-        #endregion Properties
-
-        #region Methods
-
-        public override void Validate(string propertyName = null)
-        {
-            base.Validate(propertyName);
-
-            string currentProperty = nameof(MiscExternalPlayer);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (MiscUseExternalPlayer)
-                {
-                    if (string.IsNullOrWhiteSpace(_miscExternalPlayer))
-                    {
-                        AddError(currentProperty, "Please specify an external player!");
-                    }
-                    else if (!_miscExternalPlayer.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-                    {
-                        AddError(currentProperty, "Filename must be an executable!");
-                    }
-                    else if (!File.Exists(_miscExternalPlayer))
-                    {
-                        AddError(currentProperty, "The specified file does not exist!");
-                    }
-                }
-            }
-
-            currentProperty = nameof(SearchChannelName);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchOnStartup && string.IsNullOrWhiteSpace(_searchChannelName))
-                {
-                    AddError(currentProperty, "If 'Search on Startup' is enabled, you need to specify a default channel name!");
-                }
-            }
-
-            currentProperty = nameof(SearchLoadLastDays);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchLoadLimitType == LoadLimitType.Timespan && (_searchLoadLastDays < 1 || _searchLoadLastDays > 999))
-                {
-                    AddError(currentProperty, "Value has to be between 1 and 999!");
-                }
-            }
-
-            currentProperty = nameof(SearchLoadLastVods);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchLoadLimitType == LoadLimitType.LastVods && (_searchLoadLastVods < 1 || _searchLoadLastVods > 999))
-                {
-                    AddError(currentProperty, "Value has to be between 1 and 999!");
-                }
-            }
-
-            currentProperty = nameof(DownloadTempFolder);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (string.IsNullOrWhiteSpace(DownloadTempFolder))
-                {
-                    AddError(currentProperty, "Please specify a temporary download folder!");
-                }
-            }
-
-            currentProperty = nameof(DownloadFolder);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (string.IsNullOrWhiteSpace(_downloadFolder))
-                {
-                    AddError(currentProperty, "Please specify a default download folder!");
-                }
-            }
-
-            currentProperty = nameof(DownloadFileName);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (string.IsNullOrWhiteSpace(_downloadFileName))
-                {
-                    AddError(currentProperty, "Please specify a default download filename!");
-                }
-                else if (_downloadFileName.Contains(".") || FileSystem.FilenameContainsInvalidChars(_downloadFileName))
-                {
-                    string invalidChars = new string(Path.GetInvalidFileNameChars());
-
-                    AddError(currentProperty, $"Filename contains invalid characters ({invalidChars}.)!");
-                }
-            }
-        }
-
-        public Preferences Clone()
-        {
-            Preferences clone = new Preferences()
-            {
+        public Preferences Clone() {
+            Preferences clone = new Preferences() {
                 Version = Version,
                 AppCheckForUpdates = AppCheckForUpdates,
                 AppShowDonationButton = AppShowDonationButton,
@@ -388,11 +229,82 @@ namespace TwitchLeecher.Core.Models
                 DownloadDisableConversion = DownloadDisableConversion
             };
 
-            clone.SearchFavouriteChannels.AddRange(SearchFavouriteChannels);
+            clone.SearchFavouriteChannels.AddRange( this.SearchFavouriteChannels );
 
             return clone;
         }
 
-        #endregion Methods
+        public override void Validate( String propertyName = null ) {
+            base.Validate( propertyName );
+
+            var currentProperty = nameof( this.MiscExternalPlayer );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this.MiscUseExternalPlayer ) {
+                    if ( String.IsNullOrWhiteSpace( this._miscExternalPlayer ) ) {
+                        this.AddError( currentProperty, "Please specify an external player!" );
+                    }
+                    else if ( !this._miscExternalPlayer.EndsWith( ".exe", StringComparison.OrdinalIgnoreCase ) ) {
+                        this.AddError( currentProperty, "Filename must be an executable!" );
+                    }
+                    else if ( !File.Exists( this._miscExternalPlayer ) ) {
+                        this.AddError( currentProperty, "The specified file does not exist!" );
+                    }
+                }
+            }
+
+            currentProperty = nameof( this.SearchChannelName );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchOnStartup && String.IsNullOrWhiteSpace( this._searchChannelName ) ) {
+                    this.AddError( currentProperty, "If 'Search on Startup' is enabled, you need to specify a default channel name!" );
+                }
+            }
+
+            currentProperty = nameof( this.SearchLoadLastDays );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchLoadLimitType == LoadLimitType.Timespan && ( this._searchLoadLastDays < 1 || this._searchLoadLastDays > 999 ) ) {
+                    this.AddError( currentProperty, "Value has to be between 1 and 999!" );
+                }
+            }
+
+            currentProperty = nameof( this.SearchLoadLastVods );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchLoadLimitType == LoadLimitType.LastVods && ( this._searchLoadLastVods < 1 || this._searchLoadLastVods > 999 ) ) {
+                    this.AddError( currentProperty, "Value has to be between 1 and 999!" );
+                }
+            }
+
+            currentProperty = nameof( this.DownloadTempFolder );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( String.IsNullOrWhiteSpace( this.DownloadTempFolder ) ) {
+                    this.AddError( currentProperty, "Please specify a temporary download folder!" );
+                }
+            }
+
+            currentProperty = nameof( this.DownloadFolder );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( String.IsNullOrWhiteSpace( this._downloadFolder ) ) {
+                    this.AddError( currentProperty, "Please specify a default download folder!" );
+                }
+            }
+
+            currentProperty = nameof( this.DownloadFileName );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( String.IsNullOrWhiteSpace( this._downloadFileName ) ) {
+                    this.AddError( currentProperty, "Please specify a default download filename!" );
+                }
+                else if ( this._downloadFileName.Contains( "." ) || FileSystem.FilenameContainsInvalidChars( this._downloadFileName ) ) {
+                    var invalidChars = new String( Path.GetInvalidFileNameChars() );
+
+                    this.AddError( currentProperty, $"Filename contains invalid characters ({invalidChars}.)!" );
+                }
+            }
+        }
     }
 }

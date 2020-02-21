@@ -13,11 +13,8 @@ using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Commands;
 using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class SearchResultViewVM : ViewModelBase, INavigationState
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.ViewModels {
+    public class SearchResultViewVM : ViewModelBase, INavigationState {
 
         private readonly ITwitchService _twitchService;
         private readonly IDialogService _dialogService;
@@ -33,10 +30,6 @@ namespace TwitchLeecher.Gui.ViewModels
         private ICommand _downloadCommand;
         private ICommand _seachCommand;
 
-        #endregion Fields
-
-        #region Constructors
-
         public SearchResultViewVM(
             ITwitchService twitchService,
             IDialogService dialogService,
@@ -44,217 +37,163 @@ namespace TwitchLeecher.Gui.ViewModels
             INotificationService notificationService,
             IEventAggregator eventAggregator,
             IPreferencesService preferencesService,
-            IFilenameService filenameService)
-        {
-            _twitchService = twitchService;
-            _dialogService = dialogService;
-            _navigationService = navigationService;
-            _notificationsService = notificationService;
-            _eventAggregator = eventAggregator;
-            _preferencesService = preferencesService;
-            _filenameService = filenameService;
+            IFilenameService filenameService ) {
+            this._twitchService = twitchService;
+            this._dialogService = dialogService;
+            this._navigationService = navigationService;
+            this._notificationsService = notificationService;
+            this._eventAggregator = eventAggregator;
+            this._preferencesService = preferencesService;
+            this._filenameService = filenameService;
 
-            _twitchService.PropertyChanged += TwitchService_PropertyChanged;
+            this._twitchService.PropertyChanged += this.TwitchService_PropertyChanged;
 
-            _commandLockObject = new object();
+            this._commandLockObject = new object();
         }
-
-        #endregion Constructors
-
-        #region Properties
 
         public double ScrollPosition { get; set; }
 
-        public ObservableCollection<TwitchVideo> Videos
-        {
-            get
-            {
-                return _twitchService.Videos;
+        public ObservableCollection<TwitchVideo> Videos {
+            get {
+                return this._twitchService.Videos;
             }
         }
 
-        public ICommand ViewCommand
-        {
-            get
-            {
-                if (_viewCommand == null)
-                {
-                    _viewCommand = new DelegateCommand<string>(ViewVideo);
+        public ICommand ViewCommand {
+            get {
+                if ( this._viewCommand == null ) {
+                    this._viewCommand = new DelegateCommand<string>( this.ViewVideo );
                 }
 
-                return _viewCommand;
+                return this._viewCommand;
             }
         }
 
-        public ICommand DownloadCommand
-        {
-            get
-            {
-                if (_downloadCommand == null)
-                {
-                    _downloadCommand = new DelegateCommand<string>(DownloadVideo);
+        public ICommand DownloadCommand {
+            get {
+                if ( this._downloadCommand == null ) {
+                    this._downloadCommand = new DelegateCommand<string>( this.DownloadVideo );
                 }
 
-                return _downloadCommand;
+                return this._downloadCommand;
             }
         }
 
-        public ICommand SeachCommnad
-        {
-            get
-            {
-                if (_seachCommand == null)
-                {
-                    _seachCommand = new DelegateCommand(ShowSearch);
+        public ICommand SeachCommnad {
+            get {
+                if ( this._seachCommand == null ) {
+                    this._seachCommand = new DelegateCommand( this.ShowSearch );
                 }
 
-                return _seachCommand;
+                return this._seachCommand;
             }
         }
 
-        #endregion Properties
+        private void ViewVideo( string id ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( !string.IsNullOrWhiteSpace( id ) ) {
+                        TwitchVideo video = this.Videos.Where( v => v.Id == id ).FirstOrDefault();
 
-        #region Methods
-
-        private void ViewVideo(string id)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        TwitchVideo video = Videos.Where(v => v.Id == id).FirstOrDefault();
-
-                        if (video != null && video.Url != null && video.Url.IsAbsoluteUri)
-                        {
-                            StartVideoStream(video);
+                        if ( video != null && video.Url != null && video.Url.IsAbsoluteUri ) {
+                            this.StartVideoStream( video );
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void StartVideoStream(TwitchVideo video)
-        {
-            try
-            {
-                Preferences currentPrefs = _preferencesService.CurrentPreferences;
+        private void StartVideoStream( TwitchVideo video ) {
+            try {
+                Preferences currentPrefs = this._preferencesService.CurrentPreferences;
 
-                if (currentPrefs.MiscUseExternalPlayer)
-                {
-                    Process.Start(currentPrefs.MiscExternalPlayer, video.Url.ToString());
+                if ( currentPrefs.MiscUseExternalPlayer ) {
+                    Process.Start( currentPrefs.MiscExternalPlayer, video.Url.ToString() );
                 }
-                else
-                {
-                    Process.Start(video.Url.ToString());
+                else {
+                    Process.Start( video.Url.ToString() );
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void DownloadVideo(string id)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        TwitchVideo video = Videos.Where(v => v.Id == id).FirstOrDefault();
+        private void DownloadVideo( string id ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( !string.IsNullOrWhiteSpace( id ) ) {
+                        TwitchVideo video = this.Videos.Where( v => v.Id == id ).FirstOrDefault();
 
-                        if (video != null)
-                        {
-                            VodAuthInfo vodAuthInfo = _twitchService.RetrieveVodAuthInfo(video.Id);
+                        if ( video != null ) {
+                            VodAuthInfo vodAuthInfo = this._twitchService.RetrieveVodAuthInfo( video.Id );
 
-                            if (!vodAuthInfo.Privileged && vodAuthInfo.SubOnly)
-                            {
-                                if (!_twitchService.IsAuthorized)
-                                {
-                                    _dialogService.ShowMessageBox("This video is sub-only! Please authorize your Twitch account by clicking the Twitch button in the menu.", "SUB HYPE!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            if ( !vodAuthInfo.Privileged && vodAuthInfo.SubOnly ) {
+                                if ( !this._twitchService.IsAuthorized ) {
+                                    this._dialogService.ShowMessageBox( "This video is sub-only! Please authorize your Twitch account by clicking the Twitch button in the menu.", "SUB HYPE!", MessageBoxButton.OK, MessageBoxImage.Exclamation );
                                 }
-                                else
-                                {
-                                    _dialogService.ShowMessageBox("This video is sub-only but you are not subscribed to '" + video.Channel + "'!", "SUB HYPE!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                else {
+                                    this._dialogService.ShowMessageBox( "This video is sub-only but you are not subscribed to '" + video.Channel + "'!", "SUB HYPE!", MessageBoxButton.OK, MessageBoxImage.Exclamation );
                                 }
 
                                 return;
                             }
 
-                            Preferences currentPrefs = _preferencesService.CurrentPreferences.Clone();
+                            Preferences currentPrefs = this._preferencesService.CurrentPreferences.Clone();
 
-                            string folder = currentPrefs.DownloadSubfoldersForFav && _preferencesService.IsChannelInFavourites(video.Channel)
-                                ? Path.Combine(currentPrefs.DownloadFolder, video.Channel)
+                            string folder = currentPrefs.DownloadSubfoldersForFav && this._preferencesService.IsChannelInFavourites( video.Channel )
+                                ? Path.Combine( currentPrefs.DownloadFolder, video.Channel )
                                 : currentPrefs.DownloadFolder;
 
-                            string filename = _filenameService.SubstituteWildcards(currentPrefs.DownloadFileName, video);
-                            filename = _filenameService.EnsureExtension(filename, currentPrefs.DownloadDisableConversion);
+                            string filename = this._filenameService.SubstituteWildcards( currentPrefs.DownloadFileName, video );
+                            filename = this._filenameService.EnsureExtension( filename, currentPrefs.DownloadDisableConversion );
 
-                            DownloadParameters downloadParams = new DownloadParameters(video, vodAuthInfo, video.Qualities.First(), folder, filename, currentPrefs.DownloadDisableConversion);
+                            DownloadParameters downloadParams = new DownloadParameters( video, vodAuthInfo, video.Qualities.First(), folder, filename, currentPrefs.DownloadDisableConversion );
 
-                            _navigationService.ShowDownload(downloadParams);
+                            this._navigationService.ShowDownload( downloadParams );
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        public void ShowSearch()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _navigationService.ShowSearch();
+        public void ShowSearch() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._navigationService.ShowSearch();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        protected override List<MenuCommand> BuildMenu()
-        {
+        protected override List<MenuCommand> BuildMenu() {
             List<MenuCommand> menuCommands = base.BuildMenu();
 
-            if (menuCommands == null)
-            {
+            if ( menuCommands == null ) {
                 menuCommands = new List<MenuCommand>();
             }
 
-            menuCommands.Add(new MenuCommand(SeachCommnad, "New Search", "Search"));
+            menuCommands.Add( new MenuCommand( this.SeachCommnad, "New Search", "Search" ) );
 
             return menuCommands;
         }
 
-        #endregion Methods
-
-        #region EventHandlers
-
-        private void TwitchService_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
+        private void TwitchService_PropertyChanged( object sender, PropertyChangedEventArgs e ) {
             string propertyName = e.PropertyName;
 
-            FirePropertyChanged(propertyName);
+            this.FirePropertyChanged( propertyName );
 
-            if (propertyName.Equals(nameof(Videos)))
-            {
-                ScrollPosition = 0;
+            if ( propertyName.Equals( nameof( this.Videos ) ) ) {
+                this.ScrollPosition = 0;
             }
         }
-
-        #endregion EventHandlers
     }
 }

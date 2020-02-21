@@ -1,87 +1,59 @@
-using System;
+namespace TwitchLeecher.Shared.Events {
 
-namespace TwitchLeecher.Shared.Events
-{
-    public class EventSubscription<TPayload> : IEventSubscription
-    {
-        #region Fields
+    using System;
+
+    public class EventSubscription<TPayload> : IEventSubscription {
 
         private readonly IDelegateReference _actionReference;
         private readonly IDelegateReference _filterReference;
 
-        #endregion Fields
-
-        #region Constructors
-
-        public EventSubscription(IDelegateReference actionReference, IDelegateReference filterReference)
-        {
-            if (actionReference == null)
-            {
-                throw new ArgumentNullException(nameof(actionReference));
-            }
-
-            if (!(actionReference.Target is Action<TPayload>))
-            {
-                throw new ArgumentException("Invalid action reference target type", nameof(actionReference));
-            }
-
-            if (filterReference == null)
-            {
-                throw new ArgumentNullException(nameof(filterReference));
-            }
-
-            if (!(filterReference.Target is Predicate<TPayload>))
-            {
-                throw new ArgumentException("Invalid filter reference target type", nameof(filterReference));
-            }
-
-            _actionReference = actionReference;
-            _filterReference = filterReference;
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public Action<TPayload> Action
-        {
-            get
-            {
-                return (Action<TPayload>)_actionReference.Target;
+        public Action<TPayload> Action {
+            get {
+                return ( Action<TPayload> )this._actionReference.Target;
             }
         }
 
-        public Predicate<TPayload> Filter
-        {
-            get
-            {
-                return (Predicate<TPayload>)_filterReference.Target;
+        public Predicate<TPayload> Filter {
+            get {
+                return ( Predicate<TPayload> )this._filterReference.Target;
             }
         }
 
         public SubscriptionToken SubscriptionToken { get; set; }
 
-        #endregion Properties
+        public EventSubscription( IDelegateReference actionReference, IDelegateReference filterReference ) {
+            if ( actionReference == null ) {
+                throw new ArgumentNullException( nameof( actionReference ) );
+            }
 
-        #region Methods
+            if ( !( actionReference.Target is Action<TPayload> ) ) {
+                throw new ArgumentException( "Invalid action reference target type", nameof( actionReference ) );
+            }
 
-        public virtual Action<object[]> GetExecutionStrategy()
-        {
-            Action<TPayload> action = Action;
-            Predicate<TPayload> filter = Filter;
+            if ( filterReference == null ) {
+                throw new ArgumentNullException( nameof( filterReference ) );
+            }
 
-            if (action != null && filter != null)
-            {
-                return arguments =>
-                {
-                    TPayload argument = default(TPayload);
-                    if (arguments != null && arguments.Length > 0 && arguments[0] != null)
-                    {
-                        argument = (TPayload)arguments[0];
+            if ( !( filterReference.Target is Predicate<TPayload> ) ) {
+                throw new ArgumentException( "Invalid filter reference target type", nameof( filterReference ) );
+            }
+
+            this._actionReference = actionReference;
+            this._filterReference = filterReference;
+        }
+
+        public virtual Action<Object[]> GetExecutionStrategy() {
+            Action<TPayload> action = this.Action;
+            Predicate<TPayload> filter = this.Filter;
+
+            if ( action != null && filter != null ) {
+                return arguments => {
+                    TPayload argument = default( TPayload );
+                    if ( arguments != null && arguments.Length > 0 && arguments[ 0 ] != null ) {
+                        argument = ( TPayload )arguments[ 0 ];
                     }
-                    if (filter(argument))
-                    {
-                        InvokeAction(action, argument);
+                    if ( filter( argument ) ) {
+                        this.InvokeAction( action, argument );
                     }
                 };
             }
@@ -89,16 +61,12 @@ namespace TwitchLeecher.Shared.Events
             return null;
         }
 
-        public virtual void InvokeAction(Action<TPayload> action, TPayload argument)
-        {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
+        public virtual void InvokeAction( Action<TPayload> action, TPayload argument ) {
+            if ( action == null ) {
+                throw new ArgumentNullException( nameof( action ) );
             }
 
-            action(argument);
+            action( argument );
         }
-
-        #endregion Methods
     }
 }

@@ -1,19 +1,17 @@
-﻿using System;
+﻿namespace TwitchLeecher.Core.Attributes {
 
-namespace TwitchLeecher.Core.Attributes
-{
-    public class EnumDisplayNameAttribute : Attribute
-    {
-        public EnumDisplayNameAttribute(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
+    using System;
+
+    public class EnumDisplayNameAttribute : Attribute {
+
+        public String Name { get; private set; }
+
+        public EnumDisplayNameAttribute( String name ) {
+            if ( String.IsNullOrWhiteSpace( name ) ) {
+                throw new ArgumentNullException( nameof( name ) );
             }
 
-            Name = name;
+            this.Name = name;
         }
-
-        public string Name { get; private set; }
     }
 }

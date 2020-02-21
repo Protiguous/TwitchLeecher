@@ -1,7 +1,6 @@
-﻿namespace TwitchLeecher.Core.Enums
-{
-    public enum LoadLimitType
-    {
+﻿namespace TwitchLeecher.Core.Enums {
+
+    public enum LoadLimitType {
         Timespan,
         LastVods,
         OnlyToday

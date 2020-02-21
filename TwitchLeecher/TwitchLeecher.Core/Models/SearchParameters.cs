@@ -1,365 +1,139 @@
-﻿using System;
-using TwitchLeecher.Core.Enums;
-using TwitchLeecher.Shared.Notification;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class SearchParameters : BindableBase
-    {
-        #region Fields
+    using System;
+    using TwitchLeecher.Core.Enums;
+    using TwitchLeecher.Shared.Notification;
 
-        private SearchType _searchType;
-        private VideoType _videoType;
+    public class SearchParameters : BindableBase {
 
-        private string _channel;
-        private string _urls;
-        private string _ids;
-
-        private LoadLimitType _loadLimitType;
-
+        private String _channel;
+        private String _ids;
         private DateTime? _loadFrom;
         private DateTime? _loadFromDefault;
+        private Int32 _loadLastVods;
+        private LoadLimitType _loadLimitType;
         private DateTime? _loadTo;
         private DateTime? _loadToDefault;
+        private SearchType _searchType;
+        private String _urls;
+        private VideoType _videoType;
 
-        private int _loadLastVods;
-
-        #endregion Fields
-
-        #region Constructors
-
-        public SearchParameters(SearchType searchType)
-        {
-            _searchType = searchType;
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public SearchType SearchType
-        {
-            get
-            {
-                return _searchType;
+        public String Channel {
+            get {
+                return this._channel;
             }
-            set
-            {
-                SetProperty(ref _searchType, value);
+
+            set {
+                this.SetProperty( ref this._channel, value );
             }
         }
 
-        public VideoType VideoType
-        {
-            get
-            {
-                return _videoType;
+        public String Ids {
+            get {
+                return this._ids;
             }
-            set
-            {
-                SetProperty(ref _videoType, value);
+
+            set {
+                this.SetProperty( ref this._ids, value );
             }
         }
 
-        public string Channel
-        {
-            get
-            {
-                return _channel;
+        public DateTime? LoadFrom {
+            get {
+                return this._loadFrom;
             }
-            set
-            {
-                SetProperty(ref _channel, value);
+
+            set {
+                this.SetProperty( ref this._loadFrom, value );
             }
         }
 
-        public string Urls
-        {
-            get
-            {
-                return _urls;
+        public DateTime? LoadFromDefault {
+            get {
+                return this._loadFromDefault;
             }
-            set
-            {
-                SetProperty(ref _urls, value);
+
+            set {
+                this.SetProperty( ref this._loadFromDefault, value );
             }
         }
 
-        public string Ids
-        {
-            get
-            {
-                return _ids;
+        public Int32 LoadLastVods {
+            get {
+                return this._loadLastVods;
             }
-            set
-            {
-                SetProperty(ref _ids, value);
+
+            set {
+                this.SetProperty( ref this._loadLastVods, value );
             }
         }
 
-        public LoadLimitType LoadLimitType
-        {
-            get
-            {
-                return _loadLimitType;
+        public LoadLimitType LoadLimitType {
+            get {
+                return this._loadLimitType;
             }
-            set
-            {
-                SetProperty(ref _loadLimitType, value);
+
+            set {
+                this.SetProperty( ref this._loadLimitType, value );
             }
         }
 
-        public DateTime? LoadFrom
-        {
-            get
-            {
-                return _loadFrom;
+        public DateTime? LoadTo {
+            get {
+                return this._loadTo;
             }
-            set
-            {
-                SetProperty(ref _loadFrom, value);
+
+            set {
+                this.SetProperty( ref this._loadTo, value );
             }
         }
 
-        public DateTime? LoadFromDefault
-        {
-            get
-            {
-                return _loadFromDefault;
+        public DateTime? LoadToDefault {
+            get {
+                return this._loadToDefault;
             }
-            set
-            {
-                SetProperty(ref _loadFromDefault, value);
+
+            set {
+                this.SetProperty( ref this._loadToDefault, value );
             }
         }
 
-        public DateTime? LoadTo
-        {
-            get
-            {
-                return _loadTo;
+        public SearchType SearchType {
+            get {
+                return this._searchType;
             }
-            set
-            {
-                SetProperty(ref _loadTo, value);
+
+            set {
+                this.SetProperty( ref this._searchType, value );
             }
         }
 
-        public DateTime? LoadToDefault
-        {
-            get
-            {
-                return _loadToDefault;
+        public String Urls {
+            get {
+                return this._urls;
             }
-            set
-            {
-                SetProperty(ref _loadToDefault, value);
+
+            set {
+                this.SetProperty( ref this._urls, value );
             }
         }
 
-        public int LoadLastVods
-        {
-            get
-            {
-                return _loadLastVods;
+        public VideoType VideoType {
+            get {
+                return this._videoType;
             }
-            set
-            {
-                SetProperty(ref _loadLastVods, value);
+
+            set {
+                this.SetProperty( ref this._videoType, value );
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        public override void Validate(string propertyName = null)
-        {
-            base.Validate(propertyName);
-
-            string currentProperty = nameof(Channel);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchType == SearchType.Channel && string.IsNullOrWhiteSpace(_channel))
-                {
-                    AddError(currentProperty, "Please specify a channel name!");
-                }
-            }
-
-            currentProperty = nameof(LoadFrom);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchType == SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
-                {
-                    if (!_loadFrom.HasValue)
-                    {
-                        AddError(currentProperty, "Please specify a date!");
-                    }
-                    else
-                    {
-                        DateTime minimum = new DateTime(2010, 01, 01);
-
-                        if (_loadFrom.Value.Date < minimum.Date)
-                        {
-                            AddError(currentProperty, "Date has to be greater than '" + minimum.ToShortDateString() + "'!");
-                        }
-
-                        if (_loadFrom.Value.Date > DateTime.Now.Date)
-                        {
-                            AddError(currentProperty, "Date cannot be greater than today!");
-                        }
-                    }
-                }
-            }
-
-            currentProperty = nameof(LoadTo);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchType == SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
-                {
-                    if (!_loadTo.HasValue)
-                    {
-                        AddError(currentProperty, "Please specify a date!");
-                    }
-                    else
-                    {
-                        if (_loadTo.Value.Date > DateTime.Now.Date)
-                        {
-                            AddError(currentProperty, "Date cannot be greater than today!");
-                        }
-
-                        if (_loadFrom.HasValue && _loadFrom.Value.Date > _loadTo.Value.Date)
-                        {
-                            AddError(currentProperty, "Date has to be greater than '" + _loadFrom.Value.ToShortDateString() + "'!");
-                        }
-                    }
-                }
-            }
-
-            currentProperty = nameof(LoadLastVods);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchType == SearchType.Channel && _loadLimitType == LoadLimitType.LastVods)
-                {
-                    if (_loadLastVods < 1 || _loadLastVods > 999)
-                    {
-                        AddError(currentProperty, "Value has to be between 1 and 999!");
-                    }
-                }
-            }
-
-            currentProperty = nameof(Urls);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchType == SearchType.Urls)
-                {
-                    if (string.IsNullOrWhiteSpace(_urls))
-                    {
-                        AddError(currentProperty, "Please specify one or more Twitch video urls!");
-                    }
-                    else
-                    {
-                        void AddUrlError()
-                        {
-                            AddError(currentProperty, "One or more urls are invalid!");
-                        }
-
-                        string[] urls = _urls.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                        if (urls.Length > 0)
-                        {
-                            foreach (string url in urls)
-                            {
-                                if (!Uri.TryCreate(url, UriKind.Absolute, out Uri validUrl))
-                                {
-                                    AddUrlError();
-                                    break;
-                                }
-
-                                string[] segments = validUrl.Segments;
-
-                                if (segments.Length < 2)
-                                {
-                                    AddUrlError();
-                                    break;
-                                }
-
-                                bool validId = false;
-
-                                for (int i = 0; i < segments.Length; i++)
-                                {
-                                    if (segments[i].Equals("videos/", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        if (segments.Length > (i + 1))
-                                        {
-                                            string idStr = segments[i + 1];
-
-                                            if (!string.IsNullOrWhiteSpace(idStr))
-                                            {
-                                                idStr = idStr.Trim(new char[] { '/' });
-
-                                                if (int.TryParse(idStr, out int idInt) && idInt > 0)
-                                                {
-                                                    validId = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        break;
-                                    }
-                                }
-
-                                if (!validId)
-                                {
-                                    AddUrlError();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            currentProperty = nameof(Ids);
-
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                if (_searchType == SearchType.Ids)
-                {
-                    if (string.IsNullOrWhiteSpace(_ids))
-                    {
-                        AddError(currentProperty, "Please specify one or more Twitch video IDs!");
-                    }
-                    else
-                    {
-                        string[] ids = _ids.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                        if (ids.Length > 0)
-                        {
-                            foreach (string id in ids)
-                            {
-                                if (!int.TryParse(id, out int idInt) || idInt <= 0)
-                                {
-                                    AddError(currentProperty, "One or more IDs are invalid!");
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        public SearchParameters( SearchType searchType ) {
+            this._searchType = searchType;
         }
 
-        public SearchParameters Clone()
-        {
-            return new SearchParameters(_searchType)
-            {
+        public SearchParameters Clone() {
+            return new SearchParameters( this._searchType ) {
                 VideoType = _videoType,
                 Channel = _channel,
                 Urls = _urls,
@@ -373,6 +147,147 @@ namespace TwitchLeecher.Core.Models
             };
         }
 
-        #endregion Methods
+        public override void Validate( String propertyName = null ) {
+            base.Validate( propertyName );
+
+            var currentProperty = nameof( this.Channel );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchType == SearchType.Channel && String.IsNullOrWhiteSpace( this._channel ) ) {
+                    this.AddError( currentProperty, "Please specify a channel name!" );
+                }
+            }
+
+            currentProperty = nameof( this.LoadFrom );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchType == SearchType.Channel && this._loadLimitType == LoadLimitType.Timespan ) {
+                    if ( !this._loadFrom.HasValue ) {
+                        this.AddError( currentProperty, "Please specify a date!" );
+                    }
+                    else {
+                        DateTime minimum = new DateTime( 2010, 01, 01 );
+
+                        if ( this._loadFrom.Value.Date < minimum.Date ) {
+                            this.AddError( currentProperty, "Date has to be greater than '" + minimum.ToShortDateString() + "'!" );
+                        }
+
+                        if ( this._loadFrom.Value.Date > DateTime.Now.Date ) {
+                            this.AddError( currentProperty, "Date cannot be greater than today!" );
+                        }
+                    }
+                }
+            }
+
+            currentProperty = nameof( this.LoadTo );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchType == SearchType.Channel && this._loadLimitType == LoadLimitType.Timespan ) {
+                    if ( !this._loadTo.HasValue ) {
+                        this.AddError( currentProperty, "Please specify a date!" );
+                    }
+                    else {
+                        if ( this._loadTo.Value.Date > DateTime.Now.Date ) {
+                            this.AddError( currentProperty, "Date cannot be greater than today!" );
+                        }
+
+                        if ( this._loadFrom.HasValue && this._loadFrom.Value.Date > this._loadTo.Value.Date ) {
+                            this.AddError( currentProperty, "Date has to be greater than '" + this._loadFrom.Value.ToShortDateString() + "'!" );
+                        }
+                    }
+                }
+            }
+
+            currentProperty = nameof( this.LoadLastVods );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchType == SearchType.Channel && this._loadLimitType == LoadLimitType.LastVods ) {
+                    if ( this._loadLastVods < 1 || this._loadLastVods > 999 ) {
+                        this.AddError( currentProperty, "Value has to be between 1 and 999!" );
+                    }
+                }
+            }
+
+            currentProperty = nameof( this.Urls );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchType == SearchType.Urls ) {
+                    if ( String.IsNullOrWhiteSpace( this._urls ) ) {
+                        this.AddError( currentProperty, "Please specify one or more Twitch video urls!" );
+                    }
+                    else {
+                        void AddUrlError() {
+                            this.AddError( currentProperty, "One or more urls are invalid!" );
+                        }
+
+                        String[] urls = this._urls.Split( new String[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries );
+
+                        if ( urls.Length > 0 ) {
+                            foreach ( var url in urls ) {
+                                if ( !Uri.TryCreate( url, UriKind.Absolute, out Uri validUrl ) ) {
+                                    AddUrlError();
+                                    break;
+                                }
+
+                                String[] segments = validUrl.Segments;
+
+                                if ( segments.Length < 2 ) {
+                                    AddUrlError();
+                                    break;
+                                }
+
+                                var validId = false;
+
+                                for ( var i = 0; i < segments.Length; i++ ) {
+                                    if ( segments[ i ].Equals( "videos/", StringComparison.OrdinalIgnoreCase ) ) {
+                                        if ( segments.Length > ( i + 1 ) ) {
+                                            var idStr = segments[ i + 1 ];
+
+                                            if ( !String.IsNullOrWhiteSpace( idStr ) ) {
+                                                idStr = idStr.Trim( new Char[] { '/' } );
+
+                                                if ( Int32.TryParse( idStr, out Int32 idInt ) && idInt > 0 ) {
+                                                    validId = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        break;
+                                    }
+                                }
+
+                                if ( !validId ) {
+                                    AddUrlError();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            currentProperty = nameof( this.Ids );
+
+            if ( String.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                if ( this._searchType == SearchType.Ids ) {
+                    if ( String.IsNullOrWhiteSpace( this._ids ) ) {
+                        this.AddError( currentProperty, "Please specify one or more Twitch video IDs!" );
+                    }
+                    else {
+                        String[] ids = this._ids.Split( new String[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries );
+
+                        if ( ids.Length > 0 ) {
+                            foreach ( var id in ids ) {
+                                if ( !Int32.TryParse( id, out Int32 idInt ) || idInt <= 0 ) {
+                                    this.AddError( currentProperty, "One or more IDs are invalid!" );
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

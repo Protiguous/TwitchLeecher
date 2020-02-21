@@ -1,11 +1,9 @@
 ﻿using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Gui.Interfaces
-{
-    public interface ISearchService
-    {
+namespace TwitchLeecher.Gui.Interfaces {
+    public interface ISearchService {
         SearchParameters LastSearchParams { get; }
 
-        void PerformSearch(SearchParameters searchParams);
+        void PerformSearch( SearchParameters searchParams );
     }
 }

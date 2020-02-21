@@ -1,25 +1,15 @@
 ﻿using TwitchLeecher.Shared.Extensions;
 using TwitchLeecher.Shared.Reflection;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class WelcomeViewVM : ViewModelBase
-    {
-        #region Constructors
+namespace TwitchLeecher.Gui.ViewModels {
+    public class WelcomeViewVM : ViewModelBase {
 
-        public WelcomeViewVM()
-        {
+        public WelcomeViewVM() {
             AssemblyUtil au = AssemblyUtil.Get;
 
-            ProductName = au.GetProductName() + " " + au.GetAssemblyVersion().Trim();
+            this.ProductName = au.GetProductName() + " " + au.GetAssemblyVersion().Trim();
         }
 
-        #endregion Constructors
-
-        #region Properties
-
         public string ProductName { get; }
-
-        #endregion Properties
     }
 }

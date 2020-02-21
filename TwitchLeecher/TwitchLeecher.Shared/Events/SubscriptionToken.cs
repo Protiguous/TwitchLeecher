@@ -1,64 +1,44 @@
-using System;
+namespace TwitchLeecher.Shared.Events {
 
-namespace TwitchLeecher.Shared.Events
-{
-    public sealed class SubscriptionToken : IEquatable<SubscriptionToken>, IDisposable
-    {
-        #region Fields
+    using System;
+
+    public sealed class SubscriptionToken : IEquatable<SubscriptionToken>, IDisposable {
 
         private readonly Guid _token;
         private Action<SubscriptionToken> _unsubscribeAction;
 
-        #endregion Fields
-
-        #region Constructors
-
-        public SubscriptionToken(Action<SubscriptionToken> unsubscribeAction)
-        {
-            _unsubscribeAction = unsubscribeAction;
-            _token = Guid.NewGuid();
+        public SubscriptionToken( Action<SubscriptionToken> unsubscribeAction ) {
+            this._unsubscribeAction = unsubscribeAction;
+            this._token = Guid.NewGuid();
         }
 
-        #endregion Constructors
-
-        #region Methods
-
-        public void Dispose()
-        {
-            if (_unsubscribeAction != null)
-            {
-                _unsubscribeAction(this);
-                _unsubscribeAction = null;
+        public void Dispose() {
+            if ( this._unsubscribeAction != null ) {
+                this._unsubscribeAction( this );
+                this._unsubscribeAction = null;
             }
 
-            GC.SuppressFinalize(this);
+            GC.SuppressFinalize( this );
         }
 
-        public bool Equals(SubscriptionToken other)
-        {
-            if (other == null)
-            {
+        public Boolean Equals( SubscriptionToken other ) {
+            if ( other == null ) {
                 return false;
             }
 
-            return Equals(_token, other._token);
+            return Equals( this._token, other._token );
         }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(this, obj))
-            {
+        public override Boolean Equals( Object obj ) {
+            if ( ReferenceEquals( this, obj ) ) {
                 return true;
             }
 
-            return Equals(obj as SubscriptionToken);
+            return this.Equals( obj as SubscriptionToken );
         }
 
-        public override int GetHashCode()
-        {
-            return _token.GetHashCode();
+        public override Int32 GetHashCode() {
+            return this._token.GetHashCode();
         }
-
-        #endregion Methods
     }
 }

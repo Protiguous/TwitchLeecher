@@ -2,48 +2,30 @@
 using System.Windows.Controls;
 using TwitchLeecher.Gui.Interfaces;
 
-namespace TwitchLeecher.Gui.Views
-{
-    public partial class DownloadsView : UserControl
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.Views {
+    public partial class DownloadsView : UserControl {
 
         private INavigationState _state;
 
-        #endregion Fields
+        public DownloadsView() {
+            this.InitializeComponent();
 
-        #region Constructors
-
-        public DownloadsView()
-        {
-            InitializeComponent();
-
-            scroller.ScrollChanged += Scroller_ScrollChanged;
-            Loaded += SearchResultView_Loaded;
+            this.scroller.ScrollChanged += this.Scroller_ScrollChanged;
+            this.Loaded += this.SearchResultView_Loaded;
         }
 
-        #endregion Constructors
-
-        #region EventHandlers
-
-        private void Scroller_ScrollChanged(object sender, ScrollChangedEventArgs e)
-        {
-            if (_state != null)
-            {
-                _state.ScrollPosition = e.VerticalOffset;
+        private void Scroller_ScrollChanged( object sender, ScrollChangedEventArgs e ) {
+            if ( this._state != null ) {
+                this._state.ScrollPosition = e.VerticalOffset;
             }
         }
 
-        private void SearchResultView_Loaded(object sender, RoutedEventArgs e)
-        {
-            _state = DataContext as INavigationState;
+        private void SearchResultView_Loaded( object sender, RoutedEventArgs e ) {
+            this._state = this.DataContext as INavigationState;
 
-            if (_state != null)
-            {
-                scroller.ScrollToVerticalOffset(_state.ScrollPosition);
+            if ( this._state != null ) {
+                this.scroller.ScrollToVerticalOffset( this._state.ScrollPosition );
             }
         }
-
-        #endregion EventHandlers
     }
 }

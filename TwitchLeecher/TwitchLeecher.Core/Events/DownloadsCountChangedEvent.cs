@@ -1,8 +1,7 @@
-﻿using TwitchLeecher.Shared.Events;
+﻿namespace TwitchLeecher.Core.Events {
 
-namespace TwitchLeecher.Core.Events
-{
-    public class DownloadsCountChangedEvent : PubSubEvent<int>
-    {
+    using TwitchLeecher.Shared.Events;
+
+    public class DownloadsCountChangedEvent : PubSubEvent<System.Int32> {
     }
 }

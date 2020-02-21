@@ -1,38 +1,27 @@
-﻿using System;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class VodPlaylistPart
-    {
-        #region Constructors
+    using System;
 
-        public VodPlaylistPart(double length, string remoteFile, string localFile)
-        {
-            if (string.IsNullOrWhiteSpace(remoteFile))
-            {
-                throw new ArgumentNullException(nameof(remoteFile));
+    public class VodPlaylistPart {
+
+        public Double Length { get; }
+
+        public String LocalFile { get; }
+
+        public String RemoteFile { get; }
+
+        public VodPlaylistPart( Double length, String remoteFile, String localFile ) {
+            if ( String.IsNullOrWhiteSpace( remoteFile ) ) {
+                throw new ArgumentNullException( nameof( remoteFile ) );
             }
 
-            if (string.IsNullOrWhiteSpace(localFile))
-            {
-                throw new ArgumentNullException(nameof(localFile));
+            if ( String.IsNullOrWhiteSpace( localFile ) ) {
+                throw new ArgumentNullException( nameof( localFile ) );
             }
 
-            Length = length;
-            RemoteFile = remoteFile;
-            LocalFile = localFile;
+            this.Length = length;
+            this.RemoteFile = remoteFile;
+            this.LocalFile = localFile;
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public string RemoteFile { get; }
-
-        public string LocalFile { get; }
-
-        public double Length { get; }
-
-        #endregion Properties
     }
 }

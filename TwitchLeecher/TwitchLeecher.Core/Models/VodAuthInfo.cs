@@ -1,41 +1,30 @@
-﻿using System;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class VodAuthInfo
-    {
-        #region Constructors
+    using System;
 
-        public VodAuthInfo(string token, string signature, bool privileged, bool subOnly)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentNullException(nameof(token));
+    public class VodAuthInfo {
+
+        public Boolean Privileged { get; set; }
+
+        public String Signature { get; private set; }
+
+        public Boolean SubOnly { get; set; }
+
+        public String Token { get; private set; }
+
+        public VodAuthInfo( String token, String signature, Boolean privileged, Boolean subOnly ) {
+            if ( String.IsNullOrWhiteSpace( token ) ) {
+                throw new ArgumentNullException( nameof( token ) );
             }
 
-            if (string.IsNullOrWhiteSpace(signature))
-            {
-                throw new ArgumentNullException(nameof(signature));
+            if ( String.IsNullOrWhiteSpace( signature ) ) {
+                throw new ArgumentNullException( nameof( signature ) );
             }
 
-            Token = token;
-            Signature = signature;
-            Privileged = privileged;
-            SubOnly = subOnly;
+            this.Token = token;
+            this.Signature = signature;
+            this.Privileged = privileged;
+            this.SubOnly = subOnly;
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public string Token { get; private set; }
-
-        public string Signature { get; private set; }
-
-        public bool Privileged { get; set; }
-
-        public bool SubOnly { get; set; }
-
-        #endregion Properties
     }
 }

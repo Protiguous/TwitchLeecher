@@ -1,35 +1,24 @@
-﻿using System;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class TwitchAuthInfo
-    {
-        #region Constructors
+    using System;
 
-        public TwitchAuthInfo(string accessToken, string username)
-        {
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new ArgumentNullException(nameof(accessToken));
+    public class TwitchAuthInfo {
+
+        public String AccessToken { get; private set; }
+
+        public String Username { get; private set; }
+
+        public TwitchAuthInfo( String accessToken, String username ) {
+            if ( String.IsNullOrWhiteSpace( accessToken ) ) {
+                throw new ArgumentNullException( nameof( accessToken ) );
             }
 
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                throw new ArgumentNullException(nameof(username));
+            if ( String.IsNullOrWhiteSpace( username ) ) {
+                throw new ArgumentNullException( nameof( username ) );
             }
 
-            AccessToken = accessToken;
-            Username = username;
+            this.AccessToken = accessToken;
+            this.Username = username;
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public string AccessToken { get; private set; }
-
-        public string Username { get; private set; }
-
-        #endregion Properties
     }
 }

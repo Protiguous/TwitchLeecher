@@ -1,31 +1,13 @@
-using System;
+namespace TwitchLeecher.Shared.Events {
 
-namespace TwitchLeecher.Shared.Events
-{
-    public class DataEventArgs<TData> : EventArgs
-    {
-        #region Fields
+    using System;
 
-        private readonly TData _value;
+    public class DataEventArgs<TData> : EventArgs {
 
-        #endregion Fields
+        public TData Value { get; }
 
-        #region Constructors
-
-        public DataEventArgs(TData value)
-        {
-            _value = value;
+        public DataEventArgs( TData value ) {
+            this.Value = value;
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public TData Value
-        {
-            get { return _value; }
-        }
-
-        #endregion Properties
     }
 }

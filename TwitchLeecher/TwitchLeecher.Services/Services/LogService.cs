@@ -1,60 +1,40 @@
-﻿using System;
-using System.IO;
-using TwitchLeecher.Services.Interfaces;
-using TwitchLeecher.Shared.IO;
+﻿namespace TwitchLeecher.Services.Services {
 
-namespace TwitchLeecher.Services.Services
-{
-    internal class LogService : ILogService
-    {
-        #region Constants
+    using System;
+    using System.IO;
+    using TwitchLeecher.Services.Interfaces;
+    using TwitchLeecher.Shared.IO;
 
-        private const string LOGS_FOLDER_NAME = "logs";
+    internal class LogService : ILogService {
 
-        #endregion Constants
+        private const String LOGS_FOLDER_NAME = "logs";
 
-        #region Fields
+        private readonly String _logDir;
 
-        private readonly string _logDir;
-
-        #endregion Fields
-
-        #region Constructors
-
-        public LogService(IFolderService folderService)
-        {
-            if (folderService == null)
-            {
-                throw new ArgumentNullException(nameof(folderService));
+        public LogService( IFolderService folderService ) {
+            if ( folderService == null ) {
+                throw new ArgumentNullException( nameof( folderService ) );
             }
 
-            _logDir = Path.Combine(folderService.GetAppDataFolder(), LOGS_FOLDER_NAME);
+            this._logDir = Path.Combine( folderService.GetAppDataFolder(), LOGS_FOLDER_NAME );
         }
 
-        #endregion Constructors
+        public String LogException( Exception ex ) {
+            try {
+                FileSystem.CreateDirectory( this._logDir );
 
-        #region Methods
+                var logFile = Path.Combine( this._logDir, DateTime.UtcNow.ToString( "MMddyyyy_hhmmss_fff_tt" ) + "_error.log" );
 
-        public string LogException(Exception ex)
-        {
-            try
-            {
-                FileSystem.CreateDirectory(_logDir);
-
-                string logFile = Path.Combine(_logDir, DateTime.UtcNow.ToString("MMddyyyy_hhmmss_fff_tt") + "_error.log");
-
-                File.WriteAllText(logFile, ex.ToString());
+                File.WriteAllText( logFile, ex.ToString() );
 
                 return logFile;
             }
-            catch
-            {
+            catch {
+
                 // Do not crash application if logging fails
             }
 
             return null;
         }
-
-        #endregion Methods
     }
 }

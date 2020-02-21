@@ -1,27 +1,18 @@
-﻿using System;
-using System.Reflection;
+﻿namespace TwitchLeecher.Shared.Reflection {
 
-namespace TwitchLeecher.Shared.Reflection
-{
-    public class AssemblyUtil
-    {
-        #region Fields
+    using System;
+    using System.Reflection;
+
+    public class AssemblyUtil {
 
         private static AssemblyUtil _instance;
 
-        private string _product;
+        private String _product;
         private Version _version;
 
-        #endregion Fields
-
-        #region Properties
-
-        public static AssemblyUtil Get
-        {
-            get
-            {
-                if (_instance == null)
-                {
+        public static AssemblyUtil Get {
+            get {
+                if ( _instance == null ) {
                     _instance = new AssemblyUtil();
                 }
 
@@ -29,61 +20,46 @@ namespace TwitchLeecher.Shared.Reflection
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        public Version GetAssemblyVersion()
-        {
-            if (_version == null)
-            {
+        public Version GetAssemblyVersion() {
+            if ( this._version == null ) {
                 Assembly a = Assembly.GetExecutingAssembly();
 
-                if (a == null)
-                {
-                    throw new ApplicationException("Executing assembly is null!");
+                if ( a == null ) {
+                    throw new ApplicationException( "Executing assembly is null!" );
                 }
 
                 AssemblyFileVersionAttribute att = a.GetCustomAttribute<AssemblyFileVersionAttribute>();
 
-                if (att == null)
-                {
-                    throw new ApplicationException("Could not find attribute of type '" + typeof(AssemblyFileVersionAttribute).FullName + "'!");
+                if ( att == null ) {
+                    throw new ApplicationException( "Could not find attribute of type '" + typeof( AssemblyFileVersionAttribute ).FullName + "'!" );
                 }
 
-                if (!Version.TryParse(att.Version, out _version))
-                {
-                    throw new ApplicationException("Error while parsing assembly file version!");
+                if ( !Version.TryParse( att.Version, out this._version ) ) {
+                    throw new ApplicationException( "Error while parsing assembly file version!" );
                 }
             }
 
-            return _version;
+            return this._version;
         }
 
-        public string GetProductName()
-        {
-            if (string.IsNullOrEmpty(_product))
-            {
+        public String GetProductName() {
+            if ( String.IsNullOrEmpty( this._product ) ) {
                 Assembly a = Assembly.GetExecutingAssembly();
 
-                if (a == null)
-                {
-                    throw new ApplicationException("Executing assembly is null!");
+                if ( a == null ) {
+                    throw new ApplicationException( "Executing assembly is null!" );
                 }
 
                 AssemblyProductAttribute att = a.GetCustomAttribute<AssemblyProductAttribute>();
 
-                if (att == null)
-                {
-                    throw new ApplicationException("Could not find attribute of type '" + typeof(AssemblyProductAttribute).FullName + "'!");
+                if ( att == null ) {
+                    throw new ApplicationException( "Could not find attribute of type '" + typeof( AssemblyProductAttribute ).FullName + "'!" );
                 }
 
-                _product = att.Product;
+                this._product = att.Product;
             }
 
-            return _product;
+            return this._product;
         }
-
-        #endregion Methods
     }
 }

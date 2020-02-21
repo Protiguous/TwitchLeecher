@@ -1,7 +1,5 @@
-﻿namespace TwitchLeecher.Gui.Interfaces
-{
-    public interface INotificationService
-    {
-        void ShowNotification(string text);
+﻿namespace TwitchLeecher.Gui.Interfaces {
+    public interface INotificationService {
+        void ShowNotification( string text );
     }
 }

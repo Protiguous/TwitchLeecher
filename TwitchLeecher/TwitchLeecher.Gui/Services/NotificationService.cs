@@ -2,32 +2,17 @@
 using TwitchLeecher.Gui.Interfaces;
 using TwitchLeecher.Gui.Views;
 
-namespace TwitchLeecher.Gui.Services
-{
-    internal class NotificationService : INotificationService
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.Services {
+    internal class NotificationService : INotificationService {
 
         private IKernel _kernel;
 
-        #endregion Fields
-
-        #region Constructor
-
-        public NotificationService(IKernel kernel)
-        {
-            _kernel = kernel;
+        public NotificationService( IKernel kernel ) {
+            this._kernel = kernel;
         }
 
-        #endregion Constructor
-
-        #region Methods
-
-        public void ShowNotification(string text)
-        {
-            _kernel.Get<MainWindow>().ShowNotification(text);
+        public void ShowNotification( string text ) {
+            this._kernel.Get<MainWindow>().ShowNotification( text );
         }
-
-        #endregion Methods
     }
 }

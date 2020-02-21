@@ -1,15 +1,15 @@
-﻿using TwitchLeecher.Core.Models;
+﻿namespace TwitchLeecher.Services.Interfaces {
 
-namespace TwitchLeecher.Services.Interfaces
-{
-    public interface IPreferencesService
-    {
+    using TwitchLeecher.Core.Models;
+
+    public interface IPreferencesService {
+
         Preferences CurrentPreferences { get; }
 
-        bool IsChannelInFavourites(string channel);
-
-        void Save(Preferences preferences);
-
         Preferences CreateDefault();
+
+        System.Boolean IsChannelInFavourites( System.String channel );
+
+        void Save( Preferences preferences );
     }
 }

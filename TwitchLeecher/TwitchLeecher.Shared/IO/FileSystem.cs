@@ -1,94 +1,69 @@
-﻿using System.IO;
-using System.Linq;
+﻿namespace TwitchLeecher.Shared.IO {
 
-namespace TwitchLeecher.Shared.IO
-{
-    public static class FileSystem
-    {
-        #region Methods
+    using System.IO;
+    using System.Linq;
 
-        public static void CleanDirectory(string directory)
-        {
-            DirectoryInfo dirInfo = new DirectoryInfo(directory);
+    public static class FileSystem {
 
-            if (dirInfo.Exists)
-            {
-                foreach (FileInfo file in dirInfo.GetFiles())
-                {
-                    DeleteFile(file.FullName);
+        public static void CleanDirectory( System.String directory ) {
+            DirectoryInfo dirInfo = new DirectoryInfo( directory );
+
+            if ( dirInfo.Exists ) {
+                foreach ( FileInfo file in dirInfo.GetFiles() ) {
+                    DeleteFile( file.FullName );
                 }
 
-                foreach (DirectoryInfo dir in dirInfo.GetDirectories())
-                {
-                    DeleteDirectory(dir.FullName);
+                foreach ( DirectoryInfo dir in dirInfo.GetDirectories() ) {
+                    DeleteDirectory( dir.FullName );
                 }
             }
         }
 
-        public static void CopyFile(string sourceFile, string targetDir, string newFileName = null)
-        {
-            CreateDirectory(targetDir);
+        public static void CopyFile( System.String sourceFile, System.String targetDir, System.String newFileName = null ) {
+            CreateDirectory( targetDir );
 
-            FileInfo fileInfo = new FileInfo(sourceFile);
+            FileInfo fileInfo = new FileInfo( sourceFile );
 
-            string targetFile = Path.Combine(targetDir, newFileName ?? fileInfo.Name);
+            var targetFile = Path.Combine( targetDir, newFileName ?? fileInfo.Name );
 
-            ResetFileAttributes(targetFile);
+            ResetFileAttributes( targetFile );
 
-            File.Copy(fileInfo.FullName, targetFile, true);
+            File.Copy( fileInfo.FullName, targetFile, true );
         }
 
-        public static void CreateDirectory(string directory)
-        {
-            DirectoryInfo dirInfo = new DirectoryInfo(directory);
+        public static void CreateDirectory( System.String directory ) {
+            DirectoryInfo dirInfo = new DirectoryInfo( directory );
 
-            if (!dirInfo.Exists)
-            {
+            if ( !dirInfo.Exists ) {
                 dirInfo.Create();
             }
         }
 
-        public static void DeleteDirectory(string directory)
-        {
-            DirectoryInfo dirInfo = new DirectoryInfo(directory);
+        public static void DeleteDirectory( System.String directory ) {
+            DirectoryInfo dirInfo = new DirectoryInfo( directory );
 
-            if (dirInfo.Exists)
-            {
-                CleanDirectory(directory);
-                dirInfo.Delete(true);
+            if ( dirInfo.Exists ) {
+                CleanDirectory( directory );
+                dirInfo.Delete( true );
             }
         }
 
-        public static void DeleteFile(string file)
-        {
-            FileInfo fileInfo = new FileInfo(file);
+        public static void DeleteFile( System.String file ) {
+            FileInfo fileInfo = new FileInfo( file );
 
-            if (fileInfo.Exists)
-            {
-                ResetFileAttributes(fileInfo.FullName);
+            if ( fileInfo.Exists ) {
+                ResetFileAttributes( fileInfo.FullName );
                 fileInfo.Delete();
             }
         }
 
-        public static void ResetFileAttributes(string file)
-        {
-            if (File.Exists(file))
-            {
-                File.SetAttributes(file, FileAttributes.Normal);
-            }
-        }
-
-        public static bool FilenameContainsInvalidChars(string filename)
-        {
-            if (string.IsNullOrWhiteSpace(filename))
-            {
+        public static System.Boolean FilenameContainsInvalidChars( System.String filename ) {
+            if ( System.String.IsNullOrWhiteSpace( filename ) ) {
                 return false;
             }
 
-            foreach (char c in Path.GetInvalidFileNameChars())
-            {
-                if (filename.Contains(c))
-                {
+            foreach ( var c in Path.GetInvalidFileNameChars() ) {
+                if ( filename.Contains( c ) ) {
                     return true;
                 }
             }
@@ -96,6 +71,10 @@ namespace TwitchLeecher.Shared.IO
             return false;
         }
 
-        #endregion Methods
+        public static void ResetFileAttributes( System.String file ) {
+            if ( File.Exists( file ) ) {
+                File.SetAttributes( file, FileAttributes.Normal );
+            }
+        }
     }
 }

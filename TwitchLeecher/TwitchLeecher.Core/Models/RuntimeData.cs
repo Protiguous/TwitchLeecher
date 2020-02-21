@@ -1,17 +1,13 @@
-﻿using System;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class RuntimeData
-    {
-        #region Properties
+    using System;
 
-        public Version Version { get; set; }
+    public class RuntimeData {
 
-        public string AccessToken { get; set; }
+        public String AccessToken { get; set; }
 
         public MainWindowInfo MainWindowInfo { get; set; }
 
-        #endregion Properties
+        public Version Version { get; set; }
     }
 }

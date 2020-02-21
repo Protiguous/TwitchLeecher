@@ -1,184 +1,137 @@
-﻿using System;
-using System.Text;
-using TwitchLeecher.Core.Enums;
-using TwitchLeecher.Shared.Notification;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class TwitchVideoDownload : BindableBase
-    {
-        #region Fields
+    using System;
+    using System.Text;
+    using TwitchLeecher.Core.Enums;
+    using TwitchLeecher.Shared.Notification;
 
+    public class TwitchVideoDownload : BindableBase {
+
+        private readonly Object _downloadStateLockObject;
+        private readonly Object _isIndeterminateLockObject;
+        private readonly Object _logLockObject;
+        private readonly Object _progressLockObject;
+        private readonly Object _statusLockObject;
         private DownloadState _downloadState;
-        private readonly object _downloadStateLockObject;
-
+        private Boolean _isIndeterminate;
         private StringBuilder _log;
-        private readonly object _logLockObject;
+        private Double _progress;
+        private String _status;
 
-        private double _progress;
-        private readonly object _progressLockObject;
-
-        private string _status;
-        private readonly object _statusLockObject;
-
-        private bool _isIndeterminate;
-        private readonly object _isIndeterminateLockObject;
-
-        #endregion Fields
-
-        #region Constructors
-
-        public TwitchVideoDownload(DownloadParameters downloadParams)
-        {
-            Id = Guid.NewGuid().ToString();
-            DownloadParams = downloadParams ?? throw new ArgumentNullException(nameof(downloadParams));
-
-            _log = new StringBuilder();
-
-            _downloadStateLockObject = new object();
-            _logLockObject = new object();
-            _progressLockObject = new object();
-            _statusLockObject = new object();
-            _isIndeterminateLockObject = new object();
+        public Boolean CanRetry {
+            get {
+                return this.DownloadState == DownloadState.Canceled || this.DownloadState == DownloadState.Error;
+            }
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public string Id { get; }
 
         public DownloadParameters DownloadParams { get; }
 
-        public DownloadState DownloadState
-        {
-            get
-            {
-                return _downloadState;
+        public DownloadState DownloadState {
+            get {
+                return this._downloadState;
             }
-            private set
-            {
-                _downloadState = value;
-                FirePropertyChanged(nameof(DownloadState));
-                FirePropertyChanged(nameof(CanRetry));
-                FirePropertyChanged(nameof(Status));
+
+            private set {
+                this._downloadState = value;
+                this.FirePropertyChanged( nameof( this.DownloadState ) );
+                this.FirePropertyChanged( nameof( this.CanRetry ) );
+                this.FirePropertyChanged( nameof( this.Status ) );
             }
         }
 
-        public bool CanRetry
-        {
-            get
-            {
-                return DownloadState == DownloadState.Canceled || DownloadState == DownloadState.Error;
+        public String Id { get; }
+
+        public Boolean IsIndeterminate {
+            get {
+                return this._isIndeterminate;
+            }
+
+            private set {
+                this.SetProperty( ref this._isIndeterminate, value );
             }
         }
 
-        public string Log
-        {
-            get
-            {
-                lock (_logLockObject)
-                {
-                    return _log.ToString();
+        public String Log {
+            get {
+                lock ( this._logLockObject ) {
+                    return this._log.ToString();
                 }
             }
         }
 
-        public double Progress
-        {
-            get
-            {
-                return _progress;
+        public Double Progress {
+            get {
+                return this._progress;
             }
-            private set
-            {
-                SetProperty(ref _progress, value);
+
+            private set {
+                this.SetProperty( ref this._progress, value );
             }
         }
 
-        public string Status
-        {
-            get
-            {
-                if (_downloadState != DownloadState.Downloading)
-                {
-                    return _downloadState.ToString();
+        public String Status {
+            get {
+                if ( this._downloadState != DownloadState.Downloading ) {
+                    return this._downloadState.ToString();
                 }
 
-                return _status;
+                return this._status;
             }
-            private set
-            {
-                SetProperty(ref _status, value);
-            }
-        }
 
-        public bool IsIndeterminate
-        {
-            get
-            {
-                return _isIndeterminate;
-            }
-            private set
-            {
-                SetProperty(ref _isIndeterminate, value);
+            private set {
+                this.SetProperty( ref this._status, value );
             }
         }
 
-        #endregion Properties
+        public TwitchVideoDownload( DownloadParameters downloadParams ) {
+            this.Id = Guid.NewGuid().ToString();
+            this.DownloadParams = downloadParams ?? throw new ArgumentNullException( nameof( downloadParams ) );
 
-        #region Methods
+            this._log = new StringBuilder();
 
-        public void SetDownloadState(DownloadState downloadState)
-        {
-            lock (_downloadStateLockObject)
-            {
-                DownloadState = downloadState;
+            this._downloadStateLockObject = new Object();
+            this._logLockObject = new Object();
+            this._progressLockObject = new Object();
+            this._statusLockObject = new Object();
+            this._isIndeterminateLockObject = new Object();
+        }
+
+        public void AppendLog( String text ) {
+            lock ( this._logLockObject ) {
+                this._log.Append( text );
+                this.FirePropertyChanged( nameof( this.Log ) );
             }
         }
 
-        public void AppendLog(string text)
-        {
-            lock (_logLockObject)
-            {
-                _log.Append(text);
-                FirePropertyChanged(nameof(Log));
+        public void ResetLog() {
+            lock ( this._logLockObject ) {
+                this._log.Clear();
+                this.FirePropertyChanged( nameof( this.Log ) );
             }
         }
 
-        public void ResetLog()
-        {
-            lock (_logLockObject)
-            {
-                _log.Clear();
-                FirePropertyChanged(nameof(Log));
+        public void SetDownloadState( DownloadState downloadState ) {
+            lock ( this._downloadStateLockObject ) {
+                this.DownloadState = downloadState;
             }
         }
 
-        public void SetProgress(double progress)
-        {
-            lock (_progressLockObject)
-            {
-                Progress = progress;
+        public void SetIsIndeterminate( Boolean isIndeterminate ) {
+            lock ( this._isIndeterminateLockObject ) {
+                this.IsIndeterminate = isIndeterminate;
             }
         }
 
-        public void SetStatus(string status)
-        {
-            lock (_statusLockObject)
-            {
-                Status = status;
+        public void SetProgress( Double progress ) {
+            lock ( this._progressLockObject ) {
+                this.Progress = progress;
             }
         }
 
-        public void SetIsIndeterminate(bool isIndeterminate)
-        {
-            lock (_isIndeterminateLockObject)
-            {
-                IsIndeterminate = isIndeterminate;
+        public void SetStatus( String status ) {
+            lock ( this._statusLockObject ) {
+                this.Status = status;
             }
         }
-
-        #endregion Methods
     }
 }

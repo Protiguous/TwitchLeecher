@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class VodPlaylist : List<VodPlaylistPart>
-    {
-        #region Static Methods
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
 
-        public static VodPlaylist Parse(string tempDir, string playlistStr, string urlPrefix)
-        {
+    public class VodPlaylist : List<VodPlaylistPart> {
+
+        public static VodPlaylist Parse( String tempDir, String playlistStr, String urlPrefix ) {
             VodPlaylist playlist = new VodPlaylist();
 
-            List<string> lines = playlistStr.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<String> lines = playlistStr.Split( new String[] { "\n" }, StringSplitOptions.RemoveEmptyEntries ).ToList();
 
-            int partCounter = 0;
+            var partCounter = 0;
 
-            for (int i = 0; i < lines.Count; i++)
-            {
-                string line = lines[i];
+            for ( var i = 0; i < lines.Count; i++ ) {
+                var line = lines[ i ];
 
-                if (line.StartsWith("#EXTINF", StringComparison.OrdinalIgnoreCase))
-                {
-                    double length = Math.Max(double.Parse(line.Substring(line.LastIndexOf(":") + 1).TrimEnd(','), NumberStyles.Any, CultureInfo.InvariantCulture), 0);
+                if ( line.StartsWith( "#EXTINF", StringComparison.OrdinalIgnoreCase ) ) {
+                    var length = Math.Max( Double.Parse( line.Substring( line.LastIndexOf( ":" ) + 1 ).TrimEnd( ',' ), NumberStyles.Any, CultureInfo.InvariantCulture ), 0 );
 
-                    playlist.Add(new VodPlaylistPart(length, urlPrefix + lines[i + 1], Path.Combine(tempDir, partCounter.ToString("D8") + ".ts")));
+                    playlist.Add( new VodPlaylistPart( length, urlPrefix + lines[ i + 1 ], Path.Combine( tempDir, partCounter.ToString( "D8" ) + ".ts" ) ) );
                     partCounter++;
                     i++;
                 }
@@ -34,7 +29,5 @@ namespace TwitchLeecher.Core.Models
 
             return playlist;
         }
-
-        #endregion Static Methods
     }
 }

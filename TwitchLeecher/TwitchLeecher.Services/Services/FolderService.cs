@@ -1,53 +1,39 @@
-﻿using System;
-using System.IO;
-using TwitchLeecher.Services.Interfaces;
-using TwitchLeecher.Shared.Reflection;
+﻿namespace TwitchLeecher.Services.Services {
 
-namespace TwitchLeecher.Services.Services
-{
-    internal class FolderService : IFolderService
-    {
-        #region Fields
+    using System;
+    using System.IO;
+    using TwitchLeecher.Services.Interfaces;
+    using TwitchLeecher.Shared.Reflection;
 
-        private string appDataFolder;
-        private string downloadsTempFolder;
-        private string downloadsFolder;
+    internal class FolderService : IFolderService {
 
-        #endregion Fields
+        private String appDataFolder;
+        private String downloadsFolder;
+        private String downloadsTempFolder;
 
-        #region Methods
-
-        public string GetAppDataFolder()
-        {
-            if (string.IsNullOrWhiteSpace(appDataFolder))
-            {
-                string productName = AssemblyUtil.Get.GetProductName();
-                appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), productName);
+        public String GetAppDataFolder() {
+            if ( String.IsNullOrWhiteSpace( this.appDataFolder ) ) {
+                var productName = AssemblyUtil.Get.GetProductName();
+                this.appDataFolder = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.ApplicationData ), productName );
             }
 
-            return appDataFolder;
+            return this.appDataFolder;
         }
 
-        public string GetTempFolder()
-        {
-            if (string.IsNullOrWhiteSpace(downloadsTempFolder))
-            {
-                downloadsTempFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp");
+        public String GetDownloadFolder() {
+            if ( String.IsNullOrWhiteSpace( this.downloadsFolder ) ) {
+                this.downloadsFolder = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), "Downloads" );
             }
 
-            return downloadsTempFolder;
+            return this.downloadsFolder;
         }
 
-        public string GetDownloadFolder()
-        {
-            if (string.IsNullOrWhiteSpace(downloadsFolder))
-            {
-                downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        public String GetTempFolder() {
+            if ( String.IsNullOrWhiteSpace( this.downloadsTempFolder ) ) {
+                this.downloadsTempFolder = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ), "Temp" );
             }
 
-            return downloadsFolder;
+            return this.downloadsTempFolder;
         }
-
-        #endregion Methods
     }
 }

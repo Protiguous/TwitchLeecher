@@ -1,15 +1,13 @@
-﻿using System.Collections.Specialized;
-using System.Linq;
+﻿namespace TwitchLeecher.Shared.Extensions {
 
-namespace TwitchLeecher.Shared.Extensions
-{
-    public static class NameValueCollectionExtensions
-    {
-        public static bool ContainsKey(this NameValueCollection collection, string key)
-        {
-            if (collection.Get(key) == null)
-            {
-                return collection.AllKeys.Contains(key);
+    using System.Collections.Specialized;
+    using System.Linq;
+
+    public static class NameValueCollectionExtensions {
+
+        public static System.Boolean ContainsKey( this NameValueCollection collection, System.String key ) {
+            if ( collection.Get( key ) == null ) {
+                return collection.AllKeys.Contains( key );
             }
 
             return true;

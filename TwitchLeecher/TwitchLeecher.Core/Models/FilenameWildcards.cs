@@ -1,27 +1,19 @@
-﻿namespace TwitchLeecher.Core.Models
-{
-    public static class FilenameWildcards
-    {
-        public static string CHANNEL = "{channel}";
+﻿namespace TwitchLeecher.Core.Models {
 
-        public static string GAME = "{game}";
+    public static class FilenameWildcards {
+        public static System.String CHANNEL = "{channel}";
 
-        public static string DATE = "{date}";
+        public static System.String DATE = "{date}";
+        public static System.String END = "{end}";
+        public static System.String FPS = "{fps}";
+        public static System.String GAME = "{game}";
+        public static System.String ID = "{id}";
+        public static System.String RES = "{res}";
+        public static System.String START = "{start}";
+        public static System.String TIME = "{time}";
 
-        public static string TIME = "{time}";
+        public static System.String TIME24 = "{time24}";
 
-        public static string TIME24 = "{time24}";
-
-        public static string TITLE = "{title}";
-
-        public static string RES = "{res}";
-
-        public static string FPS = "{fps}";
-
-        public static string ID = "{id}";
-
-        public static string START = "{start}";
-
-        public static string END = "{end}";
+        public static System.String TITLE = "{title}";
     }
 }

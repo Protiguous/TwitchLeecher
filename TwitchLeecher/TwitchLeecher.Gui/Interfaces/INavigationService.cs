@@ -1,9 +1,7 @@
 ﻿using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Gui.Interfaces
-{
-    public interface INavigationService
-    {
+namespace TwitchLeecher.Gui.Interfaces {
+    public interface INavigationService {
         void ShowWelcome();
 
         void ShowLoading();
@@ -12,7 +10,7 @@ namespace TwitchLeecher.Gui.Interfaces
 
         void ShowSearchResults();
 
-        void ShowDownload(DownloadParameters downloadParams);
+        void ShowDownload( DownloadParameters downloadParams );
 
         void ShowDownloads();
 
@@ -26,9 +24,9 @@ namespace TwitchLeecher.Gui.Interfaces
 
         void ShowInfo();
 
-        void ShowLog(TwitchVideoDownload download);
+        void ShowLog( TwitchVideoDownload download );
 
-        void ShowUpdateInfo(UpdateInfo updateInfo);
+        void ShowUpdateInfo( UpdateInfo updateInfo );
 
         void NavigateBack();
     }

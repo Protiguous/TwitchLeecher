@@ -1,15 +1,11 @@
-﻿using Ninject.Modules;
-using TwitchLeecher.Services.Interfaces;
-using TwitchLeecher.Services.Services;
+﻿namespace TwitchLeecher.Services.Modules {
 
-namespace TwitchLeecher.Services.Modules
-{
-    public class ServiceModule : NinjectModule
-    {
-        #region Methods
+    using TwitchLeecher.Services.Interfaces;
+    using TwitchLeecher.Services.Services;
 
-        public override void Load()
-        {
+    public class ServiceModule : NinjectModule {
+
+        public override void Load() {
             Bind<IFilenameService>().To<FilenameService>().InSingletonScope();
             Bind<IFolderService>().To<FolderService>().InSingletonScope();
             Bind<ILogService>().To<LogService>().InSingletonScope();
@@ -19,7 +15,5 @@ namespace TwitchLeecher.Services.Modules
             Bind<ITwitchService>().To<TwitchService>().InSingletonScope();
             Bind<IUpdateService>().To<UpdateService>().InSingletonScope();
         }
-
-        #endregion Methods
     }
 }

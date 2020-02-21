@@ -1,9 +1,9 @@
-﻿using System;
+﻿namespace TwitchLeecher.Shared.Native {
 
-namespace TwitchLeecher.Shared.Native
-{
-    public static class NativeDelegates
-    {
-        public delegate bool MonitorEnumProc(IntPtr hMonitor, IntPtr hdcMonitor, IntPtr lprcMonitor, IntPtr dwData);
+    using System;
+
+    public static class NativeDelegates {
+
+        public delegate Boolean MonitorEnumProc( IntPtr hMonitor, IntPtr hdcMonitor, IntPtr lprcMonitor, IntPtr dwData );
     }
 }

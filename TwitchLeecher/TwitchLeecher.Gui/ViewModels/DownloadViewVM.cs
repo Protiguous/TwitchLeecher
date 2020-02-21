@@ -11,11 +11,8 @@ using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Commands;
 using TwitchLeecher.Shared.Extensions;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class DownloadViewVM : ViewModelBase
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.ViewModels {
+    public class DownloadViewVM : ViewModelBase {
 
         private DownloadParameters _downloadParams;
         private bool _useCustomFilename;
@@ -33,378 +30,293 @@ namespace TwitchLeecher.Gui.ViewModels
 
         private readonly object _commandLockObject;
 
-        #endregion Fields
-
-        #region Constructors
-
         public DownloadViewVM(
             IDialogService dialogService,
             IFilenameService filenameService,
             IPreferencesService preferencesService,
             ITwitchService twitchService,
             INavigationService navigationService,
-            INotificationService notificationService)
-        {
-            _dialogService = dialogService;
-            _filenameService = filenameService;
-            _preferencesService = preferencesService;
-            _twitchService = twitchService;
-            _navigationService = navigationService;
-            _notificationService = notificationService;
+            INotificationService notificationService ) {
+            this._dialogService = dialogService;
+            this._filenameService = filenameService;
+            this._preferencesService = preferencesService;
+            this._twitchService = twitchService;
+            this._navigationService = navigationService;
+            this._notificationService = notificationService;
 
-            _commandLockObject = new object();
+            this._commandLockObject = new object();
         }
 
-        #endregion Constructors
-
-        #region Properties
-
-        public DownloadParameters DownloadParams
-        {
-            get
-            {
-                return _downloadParams;
+        public DownloadParameters DownloadParams {
+            get {
+                return this._downloadParams;
             }
-            set
-            {
-                if (_downloadParams != null)
-                {
-                    _downloadParams.PropertyChanged -= _downloadParams_PropertyChanged;
+            set {
+                if ( this._downloadParams != null ) {
+                    this._downloadParams.PropertyChanged -= this._downloadParams_PropertyChanged;
                 }
 
-                SetProperty(ref _downloadParams, value, nameof(DownloadParams));
+                this.SetProperty( ref this._downloadParams, value, nameof( this.DownloadParams ) );
 
-                _downloadParams.PropertyChanged += _downloadParams_PropertyChanged;
+                this._downloadParams.PropertyChanged += this._downloadParams_PropertyChanged;
             }
         }
 
-        public bool UseCustomFilename
-        {
-            get
-            {
-                return _useCustomFilename;
+        public bool UseCustomFilename {
+            get {
+                return this._useCustomFilename;
             }
-            set
-            {
-                SetProperty(ref _useCustomFilename, value, nameof(UseCustomFilename));
+            set {
+                this.SetProperty( ref this._useCustomFilename, value, nameof( this.UseCustomFilename ) );
 
-                if (!value)
-                {
-                    UpdateFilenameFromTemplate();
+                if ( !value ) {
+                    this.UpdateFilenameFromTemplate();
                 }
             }
         }
 
-        public int CropStartHours
-        {
-            get
-            {
-                return _downloadParams.CropStartTime.GetDaysInHours();
+        public int CropStartHours {
+            get {
+                return this._downloadParams.CropStartTime.GetDaysInHours();
             }
-            set
-            {
-                TimeSpan current = _downloadParams.CropStartTime;
-                _downloadParams.CropStartTime = new TimeSpan(value, current.Minutes, current.Seconds);
+            set {
+                TimeSpan current = this._downloadParams.CropStartTime;
+                this._downloadParams.CropStartTime = new TimeSpan( value, current.Minutes, current.Seconds );
 
-                FirePropertyChanged(nameof(CropStartHours));
-                FirePropertyChanged(nameof(CropStartMinutes));
-                FirePropertyChanged(nameof(CropStartSeconds));
+                this.FirePropertyChanged( nameof( this.CropStartHours ) );
+                this.FirePropertyChanged( nameof( this.CropStartMinutes ) );
+                this.FirePropertyChanged( nameof( this.CropStartSeconds ) );
             }
         }
 
-        public int CropStartMinutes
-        {
-            get
-            {
-                return _downloadParams.CropStartTime.Minutes;
+        public int CropStartMinutes {
+            get {
+                return this._downloadParams.CropStartTime.Minutes;
             }
-            set
-            {
-                TimeSpan current = _downloadParams.CropStartTime;
-                _downloadParams.CropStartTime = new TimeSpan(current.GetDaysInHours(), value, current.Seconds);
+            set {
+                TimeSpan current = this._downloadParams.CropStartTime;
+                this._downloadParams.CropStartTime = new TimeSpan( current.GetDaysInHours(), value, current.Seconds );
 
-                FirePropertyChanged(nameof(CropStartHours));
-                FirePropertyChanged(nameof(CropStartMinutes));
-                FirePropertyChanged(nameof(CropStartSeconds));
+                this.FirePropertyChanged( nameof( this.CropStartHours ) );
+                this.FirePropertyChanged( nameof( this.CropStartMinutes ) );
+                this.FirePropertyChanged( nameof( this.CropStartSeconds ) );
             }
         }
 
-        public int CropStartSeconds
-        {
-            get
-            {
-                return _downloadParams.CropStartTime.Seconds;
+        public int CropStartSeconds {
+            get {
+                return this._downloadParams.CropStartTime.Seconds;
             }
-            set
-            {
-                TimeSpan current = _downloadParams.CropStartTime;
-                _downloadParams.CropStartTime = new TimeSpan(current.GetDaysInHours(), current.Minutes, value);
+            set {
+                TimeSpan current = this._downloadParams.CropStartTime;
+                this._downloadParams.CropStartTime = new TimeSpan( current.GetDaysInHours(), current.Minutes, value );
 
-                FirePropertyChanged(nameof(CropStartHours));
-                FirePropertyChanged(nameof(CropStartMinutes));
-                FirePropertyChanged(nameof(CropStartSeconds));
+                this.FirePropertyChanged( nameof( this.CropStartHours ) );
+                this.FirePropertyChanged( nameof( this.CropStartMinutes ) );
+                this.FirePropertyChanged( nameof( this.CropStartSeconds ) );
             }
         }
 
-        public int CropEndHours
-        {
-            get
-            {
-                return _downloadParams.CropEndTime.GetDaysInHours();
+        public int CropEndHours {
+            get {
+                return this._downloadParams.CropEndTime.GetDaysInHours();
             }
-            set
-            {
-                TimeSpan current = _downloadParams.CropEndTime;
-                _downloadParams.CropEndTime = new TimeSpan(value, current.Minutes, current.Seconds);
+            set {
+                TimeSpan current = this._downloadParams.CropEndTime;
+                this._downloadParams.CropEndTime = new TimeSpan( value, current.Minutes, current.Seconds );
 
-                FirePropertyChanged(nameof(CropEndHours));
-                FirePropertyChanged(nameof(CropEndMinutes));
-                FirePropertyChanged(nameof(CropEndSeconds));
+                this.FirePropertyChanged( nameof( this.CropEndHours ) );
+                this.FirePropertyChanged( nameof( this.CropEndMinutes ) );
+                this.FirePropertyChanged( nameof( this.CropEndSeconds ) );
             }
         }
 
-        public int CropEndMinutes
-        {
-            get
-            {
-                return _downloadParams.CropEndTime.Minutes;
+        public int CropEndMinutes {
+            get {
+                return this._downloadParams.CropEndTime.Minutes;
             }
-            set
-            {
-                TimeSpan current = _downloadParams.CropEndTime;
-                _downloadParams.CropEndTime = new TimeSpan(current.GetDaysInHours(), value, current.Seconds);
+            set {
+                TimeSpan current = this._downloadParams.CropEndTime;
+                this._downloadParams.CropEndTime = new TimeSpan( current.GetDaysInHours(), value, current.Seconds );
 
-                FirePropertyChanged(nameof(CropEndHours));
-                FirePropertyChanged(nameof(CropEndMinutes));
-                FirePropertyChanged(nameof(CropEndSeconds));
+                this.FirePropertyChanged( nameof( this.CropEndHours ) );
+                this.FirePropertyChanged( nameof( this.CropEndMinutes ) );
+                this.FirePropertyChanged( nameof( this.CropEndSeconds ) );
             }
         }
 
-        public int CropEndSeconds
-        {
-            get
-            {
-                return _downloadParams.CropEndTime.Seconds;
+        public int CropEndSeconds {
+            get {
+                return this._downloadParams.CropEndTime.Seconds;
             }
-            set
-            {
-                TimeSpan current = _downloadParams.CropEndTime;
-                _downloadParams.CropEndTime = new TimeSpan(current.GetDaysInHours(), current.Minutes, value);
+            set {
+                TimeSpan current = this._downloadParams.CropEndTime;
+                this._downloadParams.CropEndTime = new TimeSpan( current.GetDaysInHours(), current.Minutes, value );
 
-                FirePropertyChanged(nameof(CropEndHours));
-                FirePropertyChanged(nameof(CropEndMinutes));
-                FirePropertyChanged(nameof(CropEndSeconds));
+                this.FirePropertyChanged( nameof( this.CropEndHours ) );
+                this.FirePropertyChanged( nameof( this.CropEndMinutes ) );
+                this.FirePropertyChanged( nameof( this.CropEndSeconds ) );
             }
         }
 
-        public ICommand ChooseCommand
-        {
-            get
-            {
-                if (_chooseCommand == null)
-                {
-                    _chooseCommand = new DelegateCommand(Choose);
+        public ICommand ChooseCommand {
+            get {
+                if ( this._chooseCommand == null ) {
+                    this._chooseCommand = new DelegateCommand( this.Choose );
                 }
 
-                return _chooseCommand;
+                return this._chooseCommand;
             }
         }
 
-        public ICommand DownloadCommand
-        {
-            get
-            {
-                if (_downloadCommand == null)
-                {
-                    _downloadCommand = new DelegateCommand(Download);
+        public ICommand DownloadCommand {
+            get {
+                if ( this._downloadCommand == null ) {
+                    this._downloadCommand = new DelegateCommand( this.Download );
                 }
 
-                return _downloadCommand;
+                return this._downloadCommand;
             }
         }
 
-        public ICommand CancelCommand
-        {
-            get
-            {
-                if (_cancelCommand == null)
-                {
-                    _cancelCommand = new DelegateCommand(Cancel);
+        public ICommand CancelCommand {
+            get {
+                if ( this._cancelCommand == null ) {
+                    this._cancelCommand = new DelegateCommand( this.Cancel );
                 }
 
-                return _cancelCommand;
+                return this._cancelCommand;
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        private void Choose()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _dialogService.ShowFolderBrowserDialog(_downloadParams.Folder, ChooseCallback);
+        private void Choose() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._dialogService.ShowFolderBrowserDialog( this._downloadParams.Folder, this.ChooseCallback );
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ChooseCallback(bool cancelled, string folder)
-        {
-            try
-            {
-                if (!cancelled)
-                {
-                    _downloadParams.Folder = folder;
-                    _downloadParams.Validate(nameof(DownloadParameters.Folder));
+        private void ChooseCallback( bool cancelled, string folder ) {
+            try {
+                if ( !cancelled ) {
+                    this._downloadParams.Folder = folder;
+                    this._downloadParams.Validate( nameof( DownloadParameters.Folder ) );
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void UpdateFilenameFromTemplate()
-        {
-            Preferences currentPrefs = _preferencesService.CurrentPreferences.Clone();
+        private void UpdateFilenameFromTemplate() {
+            Preferences currentPrefs = this._preferencesService.CurrentPreferences.Clone();
 
-            TimeSpan? cropStartTime = _downloadParams.CropStart ? _downloadParams.CropStartTime : TimeSpan.Zero;
-            TimeSpan? cropEndTime = _downloadParams.CropEnd ? _downloadParams.CropEndTime : _downloadParams.Video.Length;
+            TimeSpan? cropStartTime = this._downloadParams.CropStart ? this._downloadParams.CropStartTime : TimeSpan.Zero;
+            TimeSpan? cropEndTime = this._downloadParams.CropEnd ? this._downloadParams.CropEndTime : this._downloadParams.Video.Length;
 
-            string fileName = _filenameService.SubstituteWildcards(currentPrefs.DownloadFileName, _downloadParams.Video, _downloadParams.Quality, cropStartTime, cropEndTime);
-            fileName = _filenameService.EnsureExtension(fileName, currentPrefs.DownloadDisableConversion);
+            string fileName = this._filenameService.SubstituteWildcards( currentPrefs.DownloadFileName, this._downloadParams.Video, this._downloadParams.Quality, cropStartTime, cropEndTime );
+            fileName = this._filenameService.EnsureExtension( fileName, currentPrefs.DownloadDisableConversion );
 
-            _downloadParams.Filename = fileName;
+            this._downloadParams.Filename = fileName;
         }
 
-        private void Download()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    Validate();
+        private void Download() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this.Validate();
 
-                    if (!HasErrors)
-                    {
-                        if (File.Exists(_downloadParams.FullPath))
-                        {
-                            MessageBoxResult result = _dialogService.ShowMessageBox("The file already exists. Do you want to overwrite it?", "Download", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if ( !this.HasErrors ) {
+                        if ( File.Exists( this._downloadParams.FullPath ) ) {
+                            MessageBoxResult result = this._dialogService.ShowMessageBox( "The file already exists. Do you want to overwrite it?", "Download", MessageBoxButton.YesNo, MessageBoxImage.Question );
 
-                            if (result != MessageBoxResult.Yes)
-                            {
+                            if ( result != MessageBoxResult.Yes ) {
                                 return;
                             }
                         }
 
-                        _twitchService.Enqueue(_downloadParams);
-                        _navigationService.NavigateBack();
-                        _notificationService.ShowNotification("Download added");
+                        this._twitchService.Enqueue( this._downloadParams );
+                        this._navigationService.NavigateBack();
+                        this._notificationService.ShowNotification( "Download added" );
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void Cancel()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    _navigationService.NavigateBack();
+        private void Cancel() {
+            try {
+                lock ( this._commandLockObject ) {
+                    this._navigationService.NavigateBack();
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        public override void Validate(string propertyName = null)
-        {
-            base.Validate(propertyName);
+        public override void Validate( string propertyName = null ) {
+            base.Validate( propertyName );
 
-            string currentProperty = nameof(DownloadParams);
+            string currentProperty = nameof( this.DownloadParams );
 
-            if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
-            {
-                DownloadParams?.Validate();
+            if ( string.IsNullOrWhiteSpace( propertyName ) || propertyName == currentProperty ) {
+                this.DownloadParams?.Validate();
 
-                if (_twitchService.IsFileNameUsed(_downloadParams.FullPath))
-                {
-                    DownloadParams.AddError(nameof(DownloadParams.Filename), "Another video is already being downloaded to this file!");
+                if ( this._twitchService.IsFileNameUsed( this._downloadParams.FullPath ) ) {
+                    this.DownloadParams.AddError( nameof( this.DownloadParams.Filename ), "Another video is already being downloaded to this file!" );
                 }
 
-                if (DownloadParams.HasErrors)
-                {
-                    AddError(currentProperty, "Invalid Download Parameters!");
+                if ( this.DownloadParams.HasErrors ) {
+                    this.AddError( currentProperty, "Invalid Download Parameters!" );
 
-                    if (DownloadParams.GetErrors(nameof(DownloadParameters.CropStartTime)) is List<string> cropStartErrors && cropStartErrors.Count > 0)
-                    {
+                    if ( this.DownloadParams.GetErrors( nameof( DownloadParameters.CropStartTime ) ) is List<string> cropStartErrors && cropStartErrors.Count > 0 ) {
                         string firstError = cropStartErrors.First();
-                        AddError(nameof(CropStartHours), firstError);
-                        AddError(nameof(CropStartMinutes), firstError);
-                        AddError(nameof(CropStartSeconds), firstError);
+                        this.AddError( nameof( this.CropStartHours ), firstError );
+                        this.AddError( nameof( this.CropStartMinutes ), firstError );
+                        this.AddError( nameof( this.CropStartSeconds ), firstError );
                     }
 
-                    if (DownloadParams.GetErrors(nameof(DownloadParameters.CropEndTime)) is List<string> cropEndErrors && cropEndErrors.Count > 0)
-                    {
+                    if ( this.DownloadParams.GetErrors( nameof( DownloadParameters.CropEndTime ) ) is List<string> cropEndErrors && cropEndErrors.Count > 0 ) {
                         string firstError = cropEndErrors.First();
-                        AddError(nameof(CropEndHours), firstError);
-                        AddError(nameof(CropEndMinutes), firstError);
-                        AddError(nameof(CropEndSeconds), firstError);
+                        this.AddError( nameof( this.CropEndHours ), firstError );
+                        this.AddError( nameof( this.CropEndMinutes ), firstError );
+                        this.AddError( nameof( this.CropEndSeconds ), firstError );
                     }
                 }
             }
         }
 
-        protected override List<MenuCommand> BuildMenu()
-        {
+        protected override List<MenuCommand> BuildMenu() {
             List<MenuCommand> menuCommands = base.BuildMenu();
 
-            if (menuCommands == null)
-            {
+            if ( menuCommands == null ) {
                 menuCommands = new List<MenuCommand>();
             }
 
-            menuCommands.Add(new MenuCommand(DownloadCommand, "Download", "Download"));
-            menuCommands.Add(new MenuCommand(CancelCommand, "Cancel", "Times"));
+            menuCommands.Add( new MenuCommand( this.DownloadCommand, "Download", "Download" ) );
+            menuCommands.Add( new MenuCommand( this.CancelCommand, "Cancel", "Times" ) );
 
             return menuCommands;
         }
 
-        #endregion Methods
-
-        #region EventHandlers
-
-        private void _downloadParams_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (_useCustomFilename)
-            {
+        private void _downloadParams_PropertyChanged( object sender, PropertyChangedEventArgs e ) {
+            if ( this._useCustomFilename ) {
                 return;
             }
 
-            if (e.PropertyName == nameof(DownloadParameters.Quality)
-                || e.PropertyName == nameof(DownloadParameters.CropStart)
-                || e.PropertyName == nameof(DownloadParameters.CropEnd)
-                || e.PropertyName == nameof(DownloadParameters.CropStartTime)
-                || e.PropertyName == nameof(DownloadParameters.CropEndTime))
-            {
-                UpdateFilenameFromTemplate();
+            if ( e.PropertyName == nameof( DownloadParameters.Quality )
+                || e.PropertyName == nameof( DownloadParameters.CropStart )
+                || e.PropertyName == nameof( DownloadParameters.CropEnd )
+                || e.PropertyName == nameof( DownloadParameters.CropStartTime )
+                || e.PropertyName == nameof( DownloadParameters.CropEndTime ) ) {
+                this.UpdateFilenameFromTemplate();
             }
         }
-
-        #endregion EventHandlers
     }
 }

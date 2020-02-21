@@ -7,11 +7,8 @@ using TwitchLeecher.Gui.Interfaces;
 using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Gui.Services
-{
-    internal class SearchService : ISearchService
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.Services {
+    internal class SearchService : ISearchService {
 
         private IEventAggregator _eventAggregator;
         private IDialogService _dialogService;
@@ -21,94 +18,69 @@ namespace TwitchLeecher.Gui.Services
 
         private SearchParameters lastSearchParams;
 
-        #endregion Fields
-
-        #region Constructors
-
         public SearchService(
             IEventAggregator eventAggregator,
             IDialogService dialogService,
             ITwitchService twitchService,
             INavigationService navigationService,
-            IPreferencesService preferencesService)
-        {
-            _eventAggregator = eventAggregator;
-            _dialogService = dialogService;
-            _twitchService = twitchService;
-            _navigationService = navigationService;
-            _preferencesService = preferencesService;
+            IPreferencesService preferencesService ) {
+            this._eventAggregator = eventAggregator;
+            this._dialogService = dialogService;
+            this._twitchService = twitchService;
+            this._navigationService = navigationService;
+            this._preferencesService = preferencesService;
 
-            _eventAggregator.GetEvent<PreferencesSavedEvent>().Subscribe(PreferencesSaved);
+            this._eventAggregator.GetEvent<PreferencesSavedEvent>().Subscribe( this.PreferencesSaved );
         }
 
-        #endregion Constructors
+        public SearchParameters LastSearchParams {
+            get {
+                if ( this.lastSearchParams == null ) {
+                    Preferences currentPrefs = this._preferencesService.CurrentPreferences;
 
-        #region Properties
-
-        public SearchParameters LastSearchParams
-        {
-            get
-            {
-                if (lastSearchParams == null)
-                {
-                    Preferences currentPrefs = _preferencesService.CurrentPreferences;
-
-                    SearchParameters defaultParams = new SearchParameters(SearchType.Channel)
-                    {
+                    SearchParameters defaultParams = new SearchParameters( SearchType.Channel ) {
                         Channel = currentPrefs.SearchChannelName,
                         VideoType = currentPrefs.SearchVideoType,
                         LoadLimitType = currentPrefs.SearchLoadLimitType,
-                        LoadFrom = DateTime.Now.Date.AddDays(-currentPrefs.SearchLoadLastDays),
-                        LoadFromDefault = DateTime.Now.Date.AddDays(-currentPrefs.SearchLoadLastDays),
+                        LoadFrom = DateTime.Now.Date.AddDays( -currentPrefs.SearchLoadLastDays ),
+                        LoadFromDefault = DateTime.Now.Date.AddDays( -currentPrefs.SearchLoadLastDays ),
                         LoadTo = DateTime.Now.Date,
                         LoadToDefault = DateTime.Now.Date,
                         LoadLastVods = currentPrefs.SearchLoadLastVods
                     };
 
-                    lastSearchParams = defaultParams;
+                    this.lastSearchParams = defaultParams;
                 }
 
-                return lastSearchParams;
+                return this.lastSearchParams;
             }
         }
 
-        #endregion Properties
+        public void PerformSearch( SearchParameters searchParams ) {
+            this.lastSearchParams = searchParams;
 
-        #region Methods
+            this._navigationService.ShowLoading();
 
-        public void PerformSearch(SearchParameters searchParams)
-        {
-            lastSearchParams = searchParams;
+            Task searchTask = new Task( () => this._twitchService.Search( searchParams ) );
 
-            _navigationService.ShowLoading();
-
-            Task searchTask = new Task(() => _twitchService.Search(searchParams));
-
-            searchTask.ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    _dialogService.ShowAndLogException(task.Exception);
+            searchTask.ContinueWith( task => {
+                if ( task.IsFaulted ) {
+                    this._dialogService.ShowAndLogException( task.Exception );
                 }
 
-                _navigationService.ShowSearchResults();
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+                this._navigationService.ShowSearchResults();
+            }, TaskScheduler.FromCurrentSynchronizationContext() );
 
             searchTask.Start();
         }
 
-        private void PreferencesSaved()
-        {
-            try
-            {
-                lastSearchParams = null;
+        private void PreferencesSaved() {
+            try {
+                this.lastSearchParams = null;
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
-
-        #endregion Methods
     }
 }

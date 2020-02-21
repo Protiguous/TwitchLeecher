@@ -1,79 +1,52 @@
-using System;
-using System.Reflection;
+namespace TwitchLeecher.Shared.Events {
 
-namespace TwitchLeecher.Shared.Events
-{
-    public class DelegateReference : IDelegateReference
-    {
-        #region Fields
+    using System;
+    using System.Reflection;
+
+    public class DelegateReference : IDelegateReference {
 
         private readonly Delegate _delegate;
         private readonly Type _delegateType;
         private readonly MethodInfo _method;
         private readonly WeakReference _weakReference;
 
-        #endregion Fields
-
-        #region Constructors
-
-        public DelegateReference(Delegate @delegate, bool keepReferenceAlive)
-        {
-            if (@delegate == null)
-            {
-                throw new ArgumentNullException(nameof(@delegate));
-            }
-
-            if (keepReferenceAlive)
-            {
-                _delegate = @delegate;
-            }
-            else
-            {
-                _weakReference = new WeakReference(@delegate.Target);
-                _method = @delegate.GetMethodInfo();
-                _delegateType = @delegate.GetType();
-            }
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public Delegate Target
-        {
-            get
-            {
-                if (_delegate != null)
-                {
-                    return _delegate;
+        public Delegate Target {
+            get {
+                if ( this._delegate != null ) {
+                    return this._delegate;
                 }
-                else
-                {
-                    return TryGetDelegate();
+                else {
+                    return this.TryGetDelegate();
                 }
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        private Delegate TryGetDelegate()
-        {
-            if (_method.IsStatic)
-            {
-                return _method.CreateDelegate(_delegateType, null);
+        public DelegateReference( Delegate @delegate, Boolean keepReferenceAlive ) {
+            if ( @delegate == null ) {
+                throw new ArgumentNullException( nameof( @delegate ) );
             }
 
-            object target = _weakReference.Target;
+            if ( keepReferenceAlive ) {
+                this._delegate = @delegate;
+            }
+            else {
+                this._weakReference = new WeakReference( @delegate.Target );
+                this._method = @delegate.GetMethodInfo();
+                this._delegateType = @delegate.GetType();
+            }
+        }
 
-            if (target != null)
-            {
-                return _method.CreateDelegate(_delegateType, target);
+        private Delegate TryGetDelegate() {
+            if ( this._method.IsStatic ) {
+                return this._method.CreateDelegate( this._delegateType, null );
+            }
+
+            var target = this._weakReference.Target;
+
+            if ( target != null ) {
+                return this._method.CreateDelegate( this._delegateType, target );
             }
             return null;
         }
-
-        #endregion Methods
     }
 }

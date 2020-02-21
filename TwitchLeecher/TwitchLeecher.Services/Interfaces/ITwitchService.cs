@@ -1,53 +1,45 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using TwitchLeecher.Core.Models;
+﻿namespace TwitchLeecher.Services.Interfaces {
 
-namespace TwitchLeecher.Services.Interfaces
-{
-    public interface ITwitchService : INotifyPropertyChanged
-    {
-        #region Properties
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using TwitchLeecher.Core.Models;
 
-        bool IsAuthorized { get; }
-
-        ObservableCollection<TwitchVideo> Videos { get; }
+    public interface ITwitchService : INotifyPropertyChanged {
 
         ObservableCollection<TwitchVideoDownload> Downloads { get; }
 
-        #endregion Properties
+        System.Boolean IsAuthorized { get; }
 
-        #region Methods
+        ObservableCollection<TwitchVideo> Videos { get; }
 
-        VodAuthInfo RetrieveVodAuthInfo(string id);
+        System.Boolean Authorize( System.String accessToken );
 
-        bool ChannelExists(string channel);
+        void Cancel( System.String id );
 
-        string GetChannelIdByName(string channel);
+        System.Boolean CanShutdown();
 
-        bool Authorize(string accessToken);
+        System.Boolean ChannelExists( System.String channel );
 
-        void RevokeAuthorization();
+        void Enqueue( DownloadParameters downloadParams );
 
-        void Search(SearchParameters searchParams);
+        System.String GetChannelIdByName( System.String channel );
 
-        void Enqueue(DownloadParameters downloadParams);
-
-        void Cancel(string id);
-
-        void Retry(string id);
-
-        void Remove(string id);
+        System.Boolean IsFileNameUsed( System.String fullPath );
 
         void Pause();
 
+        void Remove( System.String id );
+
         void Resume();
 
-        bool CanShutdown();
+        VodAuthInfo RetrieveVodAuthInfo( System.String id );
+
+        void Retry( System.String id );
+
+        void RevokeAuthorization();
+
+        void Search( SearchParameters searchParams );
 
         void Shutdown();
-
-        bool IsFileNameUsed(string fullPath);
-
-        #endregion Methods
     }
 }

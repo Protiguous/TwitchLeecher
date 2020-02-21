@@ -12,11 +12,8 @@ using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Commands;
 using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Gui.ViewModels
-{
-    public class DownloadsViewVM : ViewModelBase, INavigationState
-    {
-        #region Fields
+namespace TwitchLeecher.Gui.ViewModels {
+    public class DownloadsViewVM : ViewModelBase, INavigationState {
 
         private readonly ITwitchService _twitchService;
         private readonly IDialogService _dialogService;
@@ -32,259 +29,187 @@ namespace TwitchLeecher.Gui.ViewModels
 
         private readonly object _commandLockObject;
 
-        #endregion Fields
-
-        #region Constructors
-
         public DownloadsViewVM(
             ITwitchService twitchService,
             IDialogService dialogService,
             INavigationService navigationService,
             IEventAggregator eventAggregator,
-            IPreferencesService preferencesService)
-        {
-            _twitchService = twitchService;
-            _dialogService = dialogService;
-            _navigationService = navigationService;
-            _eventAggregator = eventAggregator;
-            _preferencesService = preferencesService;
+            IPreferencesService preferencesService ) {
+            this._twitchService = twitchService;
+            this._dialogService = dialogService;
+            this._navigationService = navigationService;
+            this._eventAggregator = eventAggregator;
+            this._preferencesService = preferencesService;
 
-            _twitchService.PropertyChanged += TwitchService_PropertyChanged;
+            this._twitchService.PropertyChanged += this.TwitchService_PropertyChanged;
 
-            _commandLockObject = new object();
+            this._commandLockObject = new object();
         }
-
-        #endregion Constructors
-
-        #region Properties
 
         public double ScrollPosition { get; set; }
 
-        public ObservableCollection<TwitchVideoDownload> Downloads
-        {
-            get
-            {
-                return _twitchService.Downloads;
+        public ObservableCollection<TwitchVideoDownload> Downloads {
+            get {
+                return this._twitchService.Downloads;
             }
         }
 
-        public ICommand RetryDownloadCommand
-        {
-            get
-            {
-                if (_retryDownloadCommand == null)
-                {
-                    _retryDownloadCommand = new DelegateCommand<string>(RetryDownload);
+        public ICommand RetryDownloadCommand {
+            get {
+                if ( this._retryDownloadCommand == null ) {
+                    this._retryDownloadCommand = new DelegateCommand<string>( this.RetryDownload );
                 }
 
-                return _retryDownloadCommand;
+                return this._retryDownloadCommand;
             }
         }
 
-        public ICommand CancelDownloadCommand
-        {
-            get
-            {
-                if (_cancelDownloadCommand == null)
-                {
-                    _cancelDownloadCommand = new DelegateCommand<string>(CancelDownload);
+        public ICommand CancelDownloadCommand {
+            get {
+                if ( this._cancelDownloadCommand == null ) {
+                    this._cancelDownloadCommand = new DelegateCommand<string>( this.CancelDownload );
                 }
 
-                return _cancelDownloadCommand;
+                return this._cancelDownloadCommand;
             }
         }
 
-        public ICommand RemoveDownloadCommand
-        {
-            get
-            {
-                if (_removeDownloadCommand == null)
-                {
-                    _removeDownloadCommand = new DelegateCommand<string>(RemoveDownload);
+        public ICommand RemoveDownloadCommand {
+            get {
+                if ( this._removeDownloadCommand == null ) {
+                    this._removeDownloadCommand = new DelegateCommand<string>( this.RemoveDownload );
                 }
 
-                return _removeDownloadCommand;
+                return this._removeDownloadCommand;
             }
         }
 
-        public ICommand ShowLogCommand
-        {
-            get
-            {
-                if (_showLogCommand == null)
-                {
-                    _showLogCommand = new DelegateCommand<string>(ShowLog);
+        public ICommand ShowLogCommand {
+            get {
+                if ( this._showLogCommand == null ) {
+                    this._showLogCommand = new DelegateCommand<string>( this.ShowLog );
                 }
 
-                return _showLogCommand;
+                return this._showLogCommand;
             }
         }
 
-        public ICommand OpenDownloadFolderCommand
-        {
-            get
-            {
-                if (_openDownloadFolderCommand == null)
-                {
-                    _openDownloadFolderCommand = new DelegateCommand(OpenDownloadFolder);
+        public ICommand OpenDownloadFolderCommand {
+            get {
+                if ( this._openDownloadFolderCommand == null ) {
+                    this._openDownloadFolderCommand = new DelegateCommand( this.OpenDownloadFolder );
                 }
 
-                return _openDownloadFolderCommand;
+                return this._openDownloadFolderCommand;
             }
         }
 
-        #endregion Properties
-
-        #region Methods
-
-        private void RetryDownload(string id)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        _twitchService.Retry(id);
+        private void RetryDownload( string id ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( !string.IsNullOrWhiteSpace( id ) ) {
+                        this._twitchService.Retry( id );
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void CancelDownload(string id)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        _twitchService.Cancel(id);
+        private void CancelDownload( string id ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( !string.IsNullOrWhiteSpace( id ) ) {
+                        this._twitchService.Cancel( id );
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void RemoveDownload(string id)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        _twitchService.Remove(id);
+        private void RemoveDownload( string id ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( !string.IsNullOrWhiteSpace( id ) ) {
+                        this._twitchService.Remove( id );
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ViewVideo(string id)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        TwitchVideoDownload download = Downloads.Where(d => d.Id == id).FirstOrDefault();
+        private void ViewVideo( string id ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( !string.IsNullOrWhiteSpace( id ) ) {
+                        TwitchVideoDownload download = this.Downloads.Where( d => d.Id == id ).FirstOrDefault();
 
-                        if (download != null)
-                        {
+                        if ( download != null ) {
                             string folder = download.DownloadParams.Folder;
 
-                            if (Directory.Exists(folder))
-                            {
-                                Process.Start(folder);
+                            if ( Directory.Exists( folder ) ) {
+                                Process.Start( folder );
                             }
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void ShowLog(string id)
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        TwitchVideoDownload download = Downloads.Where(d => d.Id == id).FirstOrDefault();
+        private void ShowLog( string id ) {
+            try {
+                lock ( this._commandLockObject ) {
+                    if ( !string.IsNullOrWhiteSpace( id ) ) {
+                        TwitchVideoDownload download = this.Downloads.Where( d => d.Id == id ).FirstOrDefault();
 
-                        if (download != null)
-                        {
-                            _navigationService.ShowLog(download);
+                        if ( download != null ) {
+                            this._navigationService.ShowLog( download );
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        private void OpenDownloadFolder()
-        {
-            try
-            {
-                lock (_commandLockObject)
-                {
-                    string folder = _preferencesService.CurrentPreferences.DownloadFolder;
+        private void OpenDownloadFolder() {
+            try {
+                lock ( this._commandLockObject ) {
+                    string folder = this._preferencesService.CurrentPreferences.DownloadFolder;
 
-                    if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
-                    {
-                        Process.Start(folder);
+                    if ( !string.IsNullOrWhiteSpace( folder ) && Directory.Exists( folder ) ) {
+                        Process.Start( folder );
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
+            catch ( Exception ex ) {
+                this._dialogService.ShowAndLogException( ex );
             }
         }
 
-        protected override List<MenuCommand> BuildMenu()
-        {
+        protected override List<MenuCommand> BuildMenu() {
             List<MenuCommand> menuCommands = base.BuildMenu();
 
-            if (menuCommands == null)
-            {
+            if ( menuCommands == null ) {
                 menuCommands = new List<MenuCommand>();
             }
 
-            menuCommands.Add(new MenuCommand(OpenDownloadFolderCommand, "Open Download Folder", "FolderOpen", 230));
+            menuCommands.Add( new MenuCommand( this.OpenDownloadFolderCommand, "Open Download Folder", "FolderOpen", 230 ) );
 
             return menuCommands;
         }
 
-        #endregion Methods
-
-        #region EventHandlers
-
-        private void TwitchService_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            FirePropertyChanged(e.PropertyName);
+        private void TwitchService_PropertyChanged( object sender, PropertyChangedEventArgs e ) {
+            this.FirePropertyChanged( e.PropertyName );
         }
-
-        #endregion EventHandlers
     }
 }

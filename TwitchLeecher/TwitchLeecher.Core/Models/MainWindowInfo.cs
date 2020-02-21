@@ -1,172 +1,118 @@
-﻿using System;
-using System.Xml.Linq;
-using TwitchLeecher.Shared.Extensions;
+﻿namespace TwitchLeecher.Core.Models {
 
-namespace TwitchLeecher.Core.Models
-{
-    public class MainWindowInfo
-    {
-        #region Constants
+    using System;
+    using System.Xml.Linq;
+    using TwitchLeecher.Shared.Extensions;
 
-        public const string MAINWINDOW_EL = "MainWindow";
+    public class MainWindowInfo {
 
-        private const string MAINWINDOW_WIDTH_EL = "Width";
-        private const string MAINWINDOW_HEIGHT_EL = "Height";
-        private const string MAINWINDOW_TOP_EL = "Top";
-        private const string MAINWINDOW_LEFT_EL = "Left";
-        private const string MAINWINDOW_ISMAXIMIZED_EL = "IsMaximized";
+        private const String MAINWINDOW_HEIGHT_EL = "Height";
+        private const String MAINWINDOW_ISMAXIMIZED_EL = "IsMaximized";
+        private const String MAINWINDOW_LEFT_EL = "Left";
+        private const String MAINWINDOW_TOP_EL = "Top";
+        private const String MAINWINDOW_WIDTH_EL = "Width";
+        public const String MAINWINDOW_EL = "MainWindow";
 
-        #endregion Constants
+        public Double Height { get; set; }
 
-        #region Properties
+        public Boolean IsMaximized { get; set; }
 
-        public double Width { get; set; }
+        public Double Left { get; set; }
 
-        public double Height { get; set; }
+        public Double Top { get; set; }
 
-        public double Top { get; set; }
+        public Double Width { get; set; }
 
-        public double Left { get; set; }
-
-        public bool IsMaximized { get; set; }
-
-        #endregion Properties
-
-        #region Methods
-
-        public XElement GetXml()
-        {
-            XElement mainWindowInfoEl = new XElement(MAINWINDOW_EL);
-
-            XElement widthEl = new XElement(MAINWINDOW_WIDTH_EL);
-            widthEl.SetValue(Math.Round(Width));
-            mainWindowInfoEl.Add(widthEl);
-
-            XElement heightEl = new XElement(MAINWINDOW_HEIGHT_EL);
-            heightEl.SetValue(Math.Round(Height));
-            mainWindowInfoEl.Add(heightEl);
-
-            XElement topEl = new XElement(MAINWINDOW_TOP_EL);
-            topEl.SetValue(Math.Round(Top));
-            mainWindowInfoEl.Add(topEl);
-
-            XElement leftEl = new XElement(MAINWINDOW_LEFT_EL);
-            leftEl.SetValue(Math.Round(Left));
-            mainWindowInfoEl.Add(leftEl);
-
-            XElement isMaximizedEl = new XElement(MAINWINDOW_ISMAXIMIZED_EL);
-            isMaximizedEl.SetValue(IsMaximized);
-            mainWindowInfoEl.Add(isMaximizedEl);
-
-            return mainWindowInfoEl;
-        }
-
-        #endregion Methods
-
-        #region Static Methods
-
-        public static MainWindowInfo GetFromXml(XElement mainWindowInfoEl)
-        {
+        public static MainWindowInfo GetFromXml( XElement mainWindowInfoEl ) {
             MainWindowInfo mainWindowInfo = new MainWindowInfo();
 
-            if (mainWindowInfoEl != null)
-            {
-                XElement widthEl = mainWindowInfoEl.Element(MAINWINDOW_WIDTH_EL);
+            if ( mainWindowInfoEl != null ) {
+                XElement widthEl = mainWindowInfoEl.Element( MAINWINDOW_WIDTH_EL );
 
-                if (widthEl != null)
-                {
-                    try
-                    {
-                        mainWindowInfo.Width = (int)Math.Round(widthEl.GetValueAsDouble());
+                if ( widthEl != null ) {
+                    try {
+                        mainWindowInfo.Width = ( Int32 )Math.Round( widthEl.GetValueAsDouble() );
                     }
-                    catch
-                    {
+                    catch {
+
                         // Malformed XML
                         return null;
                     }
                 }
-                else
-                {
+                else {
+
                     // Malformed XML
                     return null;
                 }
 
-                XElement heightEl = mainWindowInfoEl.Element(MAINWINDOW_HEIGHT_EL);
+                XElement heightEl = mainWindowInfoEl.Element( MAINWINDOW_HEIGHT_EL );
 
-                if (heightEl != null)
-                {
-                    try
-                    {
-                        mainWindowInfo.Height = (int)Math.Round(heightEl.GetValueAsDouble());
+                if ( heightEl != null ) {
+                    try {
+                        mainWindowInfo.Height = ( Int32 )Math.Round( heightEl.GetValueAsDouble() );
                     }
-                    catch
-                    {
+                    catch {
+
                         // Malformed XML
                         return null;
                     }
                 }
-                else
-                {
+                else {
+
                     // Malformed XML
                     return null;
                 }
 
-                XElement topEl = mainWindowInfoEl.Element(MAINWINDOW_TOP_EL);
+                XElement topEl = mainWindowInfoEl.Element( MAINWINDOW_TOP_EL );
 
-                if (topEl != null)
-                {
-                    try
-                    {
-                        mainWindowInfo.Top = (int)Math.Round(topEl.GetValueAsDouble());
+                if ( topEl != null ) {
+                    try {
+                        mainWindowInfo.Top = ( Int32 )Math.Round( topEl.GetValueAsDouble() );
                     }
-                    catch
-                    {
+                    catch {
+
                         // Malformed XML
                         return null;
                     }
                 }
-                else
-                {
+                else {
+
                     // Malformed XML
                     return null;
                 }
 
-                XElement leftEl = mainWindowInfoEl.Element(MAINWINDOW_LEFT_EL);
+                XElement leftEl = mainWindowInfoEl.Element( MAINWINDOW_LEFT_EL );
 
-                if (leftEl != null)
-                {
-                    try
-                    {
-                        mainWindowInfo.Left = (int)Math.Round(leftEl.GetValueAsDouble());
+                if ( leftEl != null ) {
+                    try {
+                        mainWindowInfo.Left = ( Int32 )Math.Round( leftEl.GetValueAsDouble() );
                     }
-                    catch
-                    {
+                    catch {
+
                         // Malformed XML
                         return null;
                     }
                 }
-                else
-                {
+                else {
+
                     // Malformed XML
                     return null;
                 }
 
-                XElement isMaximizedEl = mainWindowInfoEl.Element(MAINWINDOW_ISMAXIMIZED_EL);
+                XElement isMaximizedEl = mainWindowInfoEl.Element( MAINWINDOW_ISMAXIMIZED_EL );
 
-                if (isMaximizedEl != null)
-                {
-                    try
-                    {
+                if ( isMaximizedEl != null ) {
+                    try {
                         mainWindowInfo.IsMaximized = isMaximizedEl.GetValueAsBool();
                     }
-                    catch
-                    {
+                    catch {
+
                         // Malformed XML
                         return null;
                     }
                 }
-                else
-                {
+                else {
+
                     // Malformed XML
                     return null;
                 }
@@ -175,6 +121,30 @@ namespace TwitchLeecher.Core.Models
             return mainWindowInfo;
         }
 
-        #endregion Static Methods
+        public XElement GetXml() {
+            XElement mainWindowInfoEl = new XElement( MAINWINDOW_EL );
+
+            XElement widthEl = new XElement( MAINWINDOW_WIDTH_EL );
+            widthEl.SetValue( Math.Round( this.Width ) );
+            mainWindowInfoEl.Add( widthEl );
+
+            XElement heightEl = new XElement( MAINWINDOW_HEIGHT_EL );
+            heightEl.SetValue( Math.Round( this.Height ) );
+            mainWindowInfoEl.Add( heightEl );
+
+            XElement topEl = new XElement( MAINWINDOW_TOP_EL );
+            topEl.SetValue( Math.Round( this.Top ) );
+            mainWindowInfoEl.Add( topEl );
+
+            XElement leftEl = new XElement( MAINWINDOW_LEFT_EL );
+            leftEl.SetValue( Math.Round( this.Left ) );
+            mainWindowInfoEl.Add( leftEl );
+
+            XElement isMaximizedEl = new XElement( MAINWINDOW_ISMAXIMIZED_EL );
+            isMaximizedEl.SetValue( this.IsMaximized );
+            mainWindowInfoEl.Add( isMaximizedEl );
+
+            return mainWindowInfoEl;
+        }
     }
 }
